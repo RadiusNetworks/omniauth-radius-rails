@@ -5,7 +5,7 @@ require "kracken/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "kracken"
+  s.name        = "kracken-engine"
   s.version     = Kracken::VERSION
   s.authors     = ["Christopher Sexton"]
   s.email       = ["chris@radiusnetworks.com"]
