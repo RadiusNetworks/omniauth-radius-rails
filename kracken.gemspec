@@ -7,13 +7,15 @@ require "kracken/version"
 Gem::Specification.new do |s|
   s.name        = "kracken"
   s.version     = Kracken::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of Kracken."
-  s.description = "TODO: Description of Kracken."
+  s.authors     = ["Christopher Sexton"]
+  s.email       = ["chris@radiusnetworks.com"]
+  s.homepage    = "http://www.radiusnetworks.com"
+  s.summary     = "Rails engine for use with Kracken"
+  s.description = "Rails engine for use with the Radius Networks Account Server."
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   s.add_dependency "rails", "~> 4.0.0"
+
+  s.add_development_dependency 'rspec-rails'
 end
