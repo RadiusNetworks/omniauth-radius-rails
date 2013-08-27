@@ -5,11 +5,35 @@ Rails Engine for use with the Radius Networks Account Server.
 
 # Install
 
-Add to the gem file
+## 1. Add to the gem file
 
-Expects a user model
+    gem "kracken-engine", require: 'kracken'
 
-this engine will expect a top level `User` class, and expects it to respond to the following
+
+## 2. Create an initializer
+
+In `config/initializers/kraken.rb`:
+
+```ruby
+Kracken.setup do |config|
+  config.app_id = ENV['OAUTH_APP_ID']
+  config.app_secret = ENV['OAUTH_APP_SECRET']
+end
+```
+
+You can also set `config.provider_url` if you want to override the location of the account server.
+
+## 3. Add routes
+
+In `config/routes.rb`:
+
+```ruby
+mount Kracken::Engine => 'auth'
+```
+
+## 4. Have a user model
+
+This engine will expect a top level `User` class, and expects it to respond to the following methods:
 
 ### `User#id`
 
@@ -25,11 +49,10 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
 
 ```ruby
 {"provider"=>"radius",
- "uid"=>"3",
- "info"=>{"name"=>nil, "email"=>nil},
+ "uid"=>"1",
  "credentials"=>
-  {"token"=>"01f8f2f50913eb24ad685385fc6ea289",
-   "refresh_token"=>"af081784e70f42bef744185742765a72",
+  {"token"=>"IAMATOKEN",
+   "refresh_token"=>"IAMATOKEN",
    "expires_at"=>1377616922,
    "expires"=>true},
  "extra"=>
@@ -41,14 +64,14 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
         {"admin"=>true,
          "company"=>nil,
          "country"=>"United States",
-         "created_at"=>"2012-08-30T18:14:10Z",
-         "email"=>"chris@radiusnetworks.com",
-         "expiration_date"=>"2013-08-30",
-         "first_name"=>"Christopher",
-         "id"=>3,
-         "last_name"=>"Sexton",
+         "created_at"=>"2000-01-00T00:00:00Z",
+         "email"=>"joe@example.com",
+         "expiration_date"=>"2000-01-00",
+         "first_name"=>"Joe",
+         "id"=>1,
+         "last_name"=>"Cool",
          "status"=>"Active",
-         "updated_at"=>"2013-08-27T14:52:03Z",
-         "uid"=>3,
+         "updated_at"=>"2000-01-00T00:00:00Z",
+         "uid"=>1,
          "accounts"=>[{"id"=>1, "name"=>"Radius Networks", "uid"=>1}]}}}}}
 ```
