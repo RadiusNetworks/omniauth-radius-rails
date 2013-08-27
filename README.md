@@ -7,7 +7,7 @@ Rails Engine for use with the Radius Networks Account Server.
 
 ## 1. Add to the gem file
 
-    gem "kracken-engine", require: 'kracken'
+    gem "omniauth-radius-rails", require: 'kracken', git: 'https://github.com/RadiusNetworks/omniauth-radius-rails.git'
 
 
 ## 2. Create an initializer
