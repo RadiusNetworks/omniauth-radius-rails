@@ -19,4 +19,5 @@ Gem::Specification.new do |s|
   s.add_dependency "omniauth-radius"
 
   s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'pry'
 end
