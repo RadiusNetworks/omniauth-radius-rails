@@ -1,7 +1,7 @@
 module Kracken
   class SessionsController < ApplicationController
     def create
-      @user = User.find_or_create_from_auth_hash(auth_hash)
+      @user = user_class.find_or_create_from_auth_hash(auth_hash)
       current_user = @user
       session[:user_id] = @user.id
       redirect_to request.env['omniauth.origin'] || root_path
@@ -9,7 +9,7 @@ module Kracken
 
     def destroy
       reset_session
-      redirect_to "#{Kracken.config.url}/users/sign_out"
+      redirect_to "#{provider_url}/users/sign_out"
     end
 
     def failure
@@ -24,6 +24,14 @@ module Kracken
 
     def auth_hash
       request.env['omniauth.auth']
+    end
+
+    def user_class
+      Kracken.config.user_class
+    end
+
+    def provider_url
+      Kracken.config.provider_url
     end
   end
 end

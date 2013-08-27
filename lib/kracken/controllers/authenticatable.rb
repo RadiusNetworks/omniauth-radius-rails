@@ -2,13 +2,22 @@ module Kracken
   module Controllers
     module Authenticatable
 
+      def self.included(base)
+        base.send :helper_method, :sign_out_path
+        base.send :helper_method, :sign_up_path
+        base.send :helper_method, :sign_in_path
+        base.send :helper_method, :current_user
+        base.send :helper_method, :user_signed_in?
+        base.send :helper_method, :is_admin
+        base.send :helper_method, :current_user
+      end
+
       def sign_out_path
-        binding.pry
         kracken.sign_out_path
       end
 
       def sign_up_path
-        "#{Kracken.config.url}/users/sign_up"
+        "#{Kracken.config.provider_url}/users/sign_up"
       end
 
       def sign_in_path(return_to=nil)
@@ -54,32 +63,30 @@ module Kracken
       def current_user
         return @current_user if @current_user
         begin
-          self.current_user = find_current_user!
-        rescue Mongoid::Errors::DocumentNotFound
-          nil
+          self.current_user = user_class.find(session[:user_id]) if session[:user_id]
+          # This was `rescue Mongoid::Errors::DocumentNotFound` but that
+          # introduced mongo as an dep. So for now just throw the error. If
+          # someone gets a 500 it's because the user_id in their session did
+          # not exist.
         end
       end
-      def find_current_user!
-        self.current_user = User.find(session[:user_id]) if session[:user_id]
-      end
-
 
       def user_signed_in?
-        return true if current_user
+        if current_user
+          true
+        else
+          false
+        end
       end
 
       def is_admin
         current_user && current_user.is_admin
       end
 
-      def self.included(base)
-        base.send :helper_method, :sign_out_path
-        base.send :helper_method, :sign_up_path
-        base.send :helper_method, :sign_in_path
-        base.send :helper_method, :current_user
-        base.send :helper_method, :user_signed_in?
-        base.send :helper_method, :is_admin
-        base.send :helper_method, :current_user
+      private
+
+      def user_class
+        Kracken.config.user_class
       end
 
     end

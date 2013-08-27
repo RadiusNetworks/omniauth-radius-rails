@@ -1,7 +1,14 @@
 module Kracken
-  Config = Struct.new( :app_id, :app_secret, :provider_url) do
-    def url
-      provider_url || "https://account.messageradius.com"
+  class Config
+    attr_accessor :app_id, :app_secret
+    attr_writer :provider_url, :user_class
+
+    def provider_url
+      @provider_url || "https://account.messageradius.com"
+    end
+
+    def user_class
+      @user_class || User
     end
   end
 end
