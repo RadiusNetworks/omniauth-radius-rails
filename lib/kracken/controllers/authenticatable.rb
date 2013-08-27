@@ -3,6 +3,7 @@ module Kracken
     module Authenticatable
 
       def sign_out_path
+        binding.pry
         kracken.sign_out_path
       end
 
