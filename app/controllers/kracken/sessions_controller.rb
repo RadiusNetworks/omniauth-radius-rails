@@ -9,7 +9,7 @@ module Kracken
 
     def destroy
       reset_session
-      redirect_to "#{Rails.application.config.oauth_provider_url}/users/sign_out"
+      redirect_to "#{Kracken.config.url}/users/sign_out"
     end
 
     def failure

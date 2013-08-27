@@ -1,5 +1,5 @@
 Kracken::Engine.routes.draw do
-  get '/auth/:provider/callback', to: 'kracken/sessions#create'
-  get '/auth/failure', to: 'kracken/sessions#failure'
-  get '/sign_out', to: 'kracken/sessions#destroy'
+  get '/:provider/callback', to: 'sessions#create'
+  get '/failure', to: 'sessions#failure'
+  get '/sign_out', to: 'sessions#destroy'
 end
