@@ -5,7 +5,7 @@ require "kracken/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "kracken-engine"
+  s.name        = "omniauth-radius-rails"
   s.version     = Kracken::VERSION
   s.authors     = ["Christopher Sexton"]
   s.email       = ["chris@radiusnetworks.com"]
