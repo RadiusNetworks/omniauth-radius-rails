@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    omniauth-radius-rails (0.0.1)
+    kracken (0.0.1)
       omniauth-radius
       rails (~> 4.0.0)
 
@@ -125,6 +125,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  omniauth-radius-rails!
+  kracken!
   pry
   rspec-rails
