@@ -8,8 +8,6 @@ module Kracken
         base.send :helper_method, :sign_in_path
         base.send :helper_method, :current_user
         base.send :helper_method, :user_signed_in?
-        base.send :helper_method, :is_admin
-        base.send :helper_method, :current_user
       end
 
       def sign_out_path
@@ -77,10 +75,6 @@ module Kracken
         else
           false
         end
-      end
-
-      def is_admin
-        current_user && current_user.is_admin
       end
 
       private
