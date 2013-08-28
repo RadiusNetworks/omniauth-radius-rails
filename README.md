@@ -35,7 +35,7 @@ Authenticatable includes helpers such as
 
 ### 1. Add to the gem file
 
-    gem 'kracken', git: 'https://github.com/RadiusNetworks/omniauth-radius-rails.git'
+    gem 'kracken', github: 'RadiusNetworks/omniauth-radius-rails'
 
 
 ### 2. Create an initializer
