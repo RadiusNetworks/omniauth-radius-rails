@@ -1,12 +1,12 @@
 # Kracken Rails Engine
 
-Rails Engine for use with the Radius Networks Account Server.
+Rails Engine for use with the Radius Networks Account Server, which is also known as Kracken. Basically this will configure rails to consume oauth provided from Kracken.
 
 # Usage
 
-## A note about the namespace
+## A note about the name
 
-The top level namespace for this generator is `Kracken`. This is not normal for a gem to be called `omniauth-radius-rails` but import a module called `Kracken`.
+the repo is called `omniauth-radius-rails` which is mostly to be an indicator of what this repo does, and to be below the radar on our github page. The gem itself is called `kracken`, and so it's top level namespace is `Kracken`.
 
 ## Control access on a controller
 
@@ -35,7 +35,7 @@ Authenticatable includes helpers such as
 
 ### 1. Add to the gem file
 
-    gem "omniauth-radius-rails", require: 'kracken',  git: 'https://github.com/RadiusNetworks/omniauth-radius-rails.git'
+    gem 'kracken', git: 'https://github.com/RadiusNetworks/omniauth-radius-rails.git'
 
 
 ### 2. Create an initializer
