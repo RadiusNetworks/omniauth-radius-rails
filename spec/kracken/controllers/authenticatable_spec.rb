@@ -4,16 +4,6 @@ require 'spec_helper'
 module Kracken
   module Controllers
 
-    class UserDouble
-      def self.find(id)
-        self.new
-      end
-
-      def admin?
-        false
-      end
-    end
-
     class BaseControllerDouble
       attr_accessor :session
 
@@ -38,7 +28,6 @@ module Kracken
 
       before do
         Kracken.setup do |config|
-          config.user_class = UserDouble
           config.provider_url = 'http://rspec'
         end
       end
@@ -81,6 +70,7 @@ module Kracken
       context "when a user is logged in" do
         before do
           controller.session[:user_id] = 1
+          User.find_or_create_from_auth_hash({"uid" => 1})
         end
 
         it "#user_signed_in? is true" do
@@ -88,7 +78,6 @@ module Kracken
         end
 
         it "#authenticate_user is true" do
-          controller.session[:user_id] = 1
           expect(controller.authenticate_user).to be_true
         end
 
@@ -96,46 +85,21 @@ module Kracken
           expect(controller.user_signed_in?).to be_true
         end
 
-        it "#redirects to root when user is not an admin" do
-          allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
-          allow(controller).to receive(:redirect_to)
-
-          controller.authorize_admin!
-
-          expect(controller).to have_received(:redirect_to).with("/")
-        end
-
         it "#current_user memoizes current user" do
-          allow(UserDouble).to receive(:find).and_return(:user_double)
+          allow(User).to receive(:find).and_return(:user_double)
           controller.current_user = :fake_user
 
           controller.current_user
 
-          expect(UserDouble).to_not have_received(:find)
+          expect(User).to_not have_received(:find)
         end
 
         it "#current_user fetches current user" do
-          allow(UserDouble).to receive(:find).and_return(:user_double)
+          allow(User).to receive(:find).and_return(:user_double)
 
           controller.current_user
 
-          expect(UserDouble).to have_received(:find)
-        end
-      end
-
-      context "when an admin user is logged in" do
-        before do
-          controller.session[:user_id] = 1
-          allow(controller.current_user).to receive(:admin?).and_return(true)
-        end
-
-        it "does not redirect to root when user is an admin" do
-          allow(controller).to receive(:redirect_to)
-          allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
-
-          controller.authorize_admin!
-
-          expect(controller).to_not have_received(:redirect_to)
+          expect(User).to have_received(:find)
         end
       end
 

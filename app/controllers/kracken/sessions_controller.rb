@@ -4,7 +4,7 @@ module Kracken
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
       current_user = @user
       session[:user_id] = @user.id
-      redirect_to request.env['omniauth.origin'] || root_path
+      redirect_to return_to_path
     end
 
     def destroy
@@ -21,6 +21,10 @@ module Kracken
     end
 
     protected
+
+    def return_to_path
+      request.env['omniauth.origin'] || "/"
+    end
 
     def auth_hash
       request.env['omniauth.auth']

@@ -44,16 +44,6 @@ module Kracken
         end
       end
 
-      def authorize_admin!
-        unless user_signed_in? && current_user.admin?
-          if request.format == :json
-            render json: {error: '403 Forbidden'}, status: :forbidden
-          else
-            redirect_to root_url
-          end
-        end
-      end
-
       def current_user=(u)
         @current_user = u
       end
