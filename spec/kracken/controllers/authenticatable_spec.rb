@@ -46,6 +46,10 @@ module Kracken
           expect(controller.sign_up_path).to eq "http://rspec/users/sign_up"
         end
 
+        it "#sign_up_path appends query parameters" do
+          expect(controller.sign_up_path query: 'param').to eq "http://rspec/users/sign_up?query=param"
+        end
+
         it "#sign_in_path returns auth/radius" do
           expect(controller.sign_in_path).to eq "/auth/radius"
         end

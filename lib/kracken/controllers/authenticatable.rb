@@ -14,8 +14,10 @@ module Kracken
         kracken.sign_out_path
       end
 
-      def sign_up_path
-        "#{Kracken.config.provider_url}/users/sign_up"
+      def sign_up_path(query_params = {})
+        uri = URI("#{Kracken.config.provider_url}/users/sign_up")
+        uri.query = query_params.to_query unless query_params.empty?
+        uri.to_s
       end
 
       def sign_in_path(return_to=nil)
