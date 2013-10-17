@@ -52,12 +52,19 @@ module Kracken
 
       def current_user
         return @current_user if @current_user
+
         begin
           self.current_user = user_class.find(session[:user_id]) if session[:user_id]
+        rescue => e
           # This was `rescue Mongoid::Errors::DocumentNotFound` but that
           # introduced mongo as an dep. So for now just throw the error. If
           # someone gets a 500 it's because the user_id in their session did
           # not exist.
+
+          STDERR.puts "Kracken: Authentication Error: #{e}"
+          Rails.logger.error e if defined? Rails
+
+          nil
         end
       end
 
