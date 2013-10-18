@@ -20,11 +20,11 @@ module Kracken
       def sign_in(user = nil)
         Kracken::SpecHelper.current_user = user
       end
-      
+
       def sign_out(ignored = nil)
         Kracken::SpecHelper.current_user = nil
       end
-      
+
       def current_user
         Kracken::SpecHelper.current_user
       end
