@@ -31,6 +31,7 @@ module Kracken
     end
 
   end
+
 end
 
 # monkey patch current_user
@@ -51,13 +52,13 @@ if defined? RSpec
     }
 
     c.include Kracken::SpecHelper::Request, type: :request, example_group: {
-      file_path: c.escaped_path(%w[spec (requests|integration|api)])
+      file_path: c.escaped_path(%w[spec (requests|features|integration|api)])
     }
 
-    c.before( type: :controller) do
+    c.before(type: :controller) do
         Kracken::SpecHelper.current_user = nil
     end
-    c.before( type: :request) do
+    c.before(type: :request) do
         Kracken::SpecHelper.current_user = nil
     end
   end

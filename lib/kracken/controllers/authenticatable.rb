@@ -52,7 +52,10 @@ module Kracken
 
       def current_user
         return @current_user if @current_user
+        fetch_current_user
+      end
 
+      def fetch_current_user
         begin
           self.current_user = user_class.find(session[:user_id]) if session[:user_id]
         rescue => e
