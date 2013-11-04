@@ -6,7 +6,7 @@ module Kracken
     subject(:config){ Kracken::Config.new }
 
     it "sets a default url" do
-      expect(config.provider_url).to eq "https://account.messageradius.com"
+      expect(config.provider_url).to eq "https://account.radiusnetworks.com"
     end
 
     it "sets a default user class" do
