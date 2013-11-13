@@ -52,12 +52,19 @@ if defined? RSpec
     }
 
     c.include Kracken::SpecHelper::Request, type: :request, example_group: {
-      file_path: c.escaped_path(%w[spec (requests|features|integration|api)])
+      file_path: c.escaped_path(%w[spec (requests|integration|api)])
     }
+
+    c.include Kracken::SpecHelper::Request, type: :kracken
+
+    c.before(type: :kracken) do
+        Kracken::SpecHelper.current_user = nil
+    end
 
     c.before(type: :controller) do
         Kracken::SpecHelper.current_user = nil
     end
+
     c.before(type: :request) do
         Kracken::SpecHelper.current_user = nil
     end
