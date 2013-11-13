@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kracken (0.0.1)
+    kracken (0.0.4)
       omniauth-radius
       rails (~> 4.0.0)
 
@@ -50,7 +50,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     method_source (0.8.2)
-    mime-types (1.24)
+    mime-types (1.25)
     minitest (4.7.5)
     multi_json (1.7.9)
     multipart-post (1.2.0)

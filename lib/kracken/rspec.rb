@@ -52,7 +52,7 @@ if defined? RSpec
     }
 
     c.include Kracken::SpecHelper::Request, type: :request, example_group: {
-      file_path: c.escaped_path(%w[spec (requests|integration|api)])
+      file_path: c.escaped_path(%w[spec (requests|features|integration|api)])
     }
 
     c.include Kracken::SpecHelper::Request, type: :kracken
