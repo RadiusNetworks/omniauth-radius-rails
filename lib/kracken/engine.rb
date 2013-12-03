@@ -1,4 +1,4 @@
-require 'omniauth-radius'
+require 'omniauth/strategies/radius'
 
 module Kracken
   class Engine < ::Rails::Engine

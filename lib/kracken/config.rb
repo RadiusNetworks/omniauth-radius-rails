@@ -4,7 +4,7 @@ module Kracken
     attr_writer :provider_url, :user_class
 
     def provider_url
-      @provider_url || "https://account.radiusnetworks.com"
+      @provider_url || PROVIDER_URL
     end
 
     def user_class

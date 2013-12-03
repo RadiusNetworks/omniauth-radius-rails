@@ -49,7 +49,7 @@ Kracken.setup do |config|
 end
 ```
 
-You can also set `config.provider_url` if you want to override the location of the account server.
+You can also set `ENV['RADIUS_OAUTH_PROVIDER_URL']` if you want to override the location of the account server.
 
 ### 3. Add routes
 

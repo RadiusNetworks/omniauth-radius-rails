@@ -1,3 +1,5 @@
+
+require "kracken/env"
 require "kracken/engine"
 require "kracken/config"
 require "kracken/controllers/authenticatable"
