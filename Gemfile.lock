@@ -2,7 +2,9 @@ PATH
   remote: .
   specs:
     kracken (0.0.4)
-      omniauth-radius
+      faraday (~> 0.8)
+      omniauth (~> 1.0)
+      omniauth-oauth2 (~> 1.1)
       rails (~> 4.0.0)
 
 GEM
@@ -32,7 +34,7 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
-    arel (4.0.0)
+    arel (4.0.1)
     atomic (1.1.13)
     builder (3.1.4)
     coderay (1.0.9)
@@ -66,9 +68,6 @@ GEM
     omniauth-oauth2 (1.1.1)
       oauth2 (~> 0.8.0)
       omniauth (~> 1.0)
-    omniauth-radius (0.0.1)
-      omniauth (~> 1.0)
-      omniauth-oauth2 (~> 1.1)
     polyglot (0.3.3)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
@@ -110,7 +109,7 @@ GEM
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    sprockets-rails (2.0.0)
+    sprockets-rails (2.0.1)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (~> 2.8)
