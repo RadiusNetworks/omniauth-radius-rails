@@ -48,8 +48,9 @@ end
 if defined? RSpec
   RSpec.configure do |c|
     c.include Kracken::SpecHelper::Controller, type: :controller
-    c.include Kracken::SpecHelper::Request, type: :request
+    c.include Kracken::SpecHelper::Request, type: :feature
     c.include Kracken::SpecHelper::Request, type: :kracken
+    c.include Kracken::SpecHelper::Request, type: :request
 
     c.before(type: :kracken) do
         Kracken::SpecHelper.current_user = nil
