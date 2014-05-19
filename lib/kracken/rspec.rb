@@ -47,14 +47,8 @@ end
 
 if defined? RSpec
   RSpec.configure do |c|
-    c.include Kracken::SpecHelper::Controller, type: :controller, example_group: {
-      file_path: c.escaped_path(%w[spec controllers])
-    }
-
-    c.include Kracken::SpecHelper::Request, type: :request, example_group: {
-      file_path: c.escaped_path(%w[spec (requests|features|integration|api)])
-    }
-
+    c.include Kracken::SpecHelper::Controller, type: :controller
+    c.include Kracken::SpecHelper::Request, type: :request
     c.include Kracken::SpecHelper::Request, type: :kracken
 
     c.before(type: :kracken) do

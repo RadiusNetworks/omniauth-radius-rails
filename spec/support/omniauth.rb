@@ -39,8 +39,6 @@ end
 
 if defined? RSpec
   RSpec.configure do |c|
-    c.include OAuthHelper::Request, type: :request, example_group: {
-      file_path: c.escaped_path(%w[spec (requests|integration|api)])
-    }
+    c.include OAuthHelper::Request, type: :request
   end
 end
