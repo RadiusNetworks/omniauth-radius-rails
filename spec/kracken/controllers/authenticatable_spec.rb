@@ -66,7 +66,7 @@ module Kracken
         end
 
         it "#user_signed_in? is false" do
-          expect(controller.user_signed_in?).to be_false
+          expect(controller.user_signed_in?).to be_falsey
         end
 
       end
@@ -78,15 +78,15 @@ module Kracken
         end
 
         it "#user_signed_in? is true" do
-          expect(controller.user_signed_in?).to be_true
+          expect(controller.user_signed_in?).to be_truthy
         end
 
         it "#authenticate_user is true" do
-          expect(controller.authenticate_user).to be_true
+          expect(controller.authenticate_user).to be_truthy
         end
 
         it "#user_signed_in? is true" do
-          expect(controller.user_signed_in?).to be_true
+          expect(controller.user_signed_in?).to be_truthy
         end
 
         it "#current_user memoizes current user" do
