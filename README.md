@@ -2,6 +2,8 @@
 
 Rails Engine for use with the Radius Networks Account Server, which is also known as Kracken. Basically this will configure rails to consume oauth provided from Kracken.
 
+[![Build Status](https://travis-ci.org/RadiusNetworks/omniauth-radius-rails.svg)](https://travis-ci.org/RadiusNetworks/omniauth-radius-rails)
+
 # Usage
 
 ## A note about the name
