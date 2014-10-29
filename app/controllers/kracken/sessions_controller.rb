@@ -9,6 +9,7 @@ module Kracken
 
     def destroy
       reset_session
+      flash[:notice] = "Signed out successfully."
       redirect_to "#{provider_url}/users/sign_out#{signout_redirect_query}"
     end
 
