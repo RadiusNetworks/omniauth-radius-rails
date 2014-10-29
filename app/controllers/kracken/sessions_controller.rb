@@ -9,7 +9,8 @@ module Kracken
 
     def destroy
       reset_session
-      redirect_to "#{provider_url}/users/sign_out"
+      flash[:notice] = "Signed out successfully."
+      redirect_to "#{provider_url}/users/sign_out#{signout_redirect_query}"
     end
 
     def failure
@@ -36,6 +37,12 @@ module Kracken
 
     def provider_url
       Kracken.config.provider_url
+    end
+
+    def signout_redirect_query
+      current_root = URI(request.url)
+      current_root.path = ''
+      "?redirect_to=#{CGI.escape(current_root.to_s)}"
     end
   end
 end
