@@ -40,7 +40,6 @@ module Kracken
     class FakeUser
       def find_or_create_from_auth_hash(auth)
         uid auth.uid
-        provider auth.provider
       end
     end
 
@@ -50,7 +49,6 @@ module Kracken
 
       user_double = FakeUser.new
       user_double.stub(:uid)
-      user_double.stub(:provider)
       updater.stub(:user_class).and_return(user_double)
 
       updater.refresh_with_oauth!
