@@ -28,8 +28,8 @@ module Kracken
           password: password,
         },
         application: {
-          name: config.app_id,
-          secret:  config.app_secret,
+          name: app_id,
+          secret:  app_secret,
         },
       }
     end
@@ -54,6 +54,14 @@ module Kracken
 
     def user_class
       Kracken.config.user_class
+    end
+
+    def app_id
+      Kracken.config.app_id
+    end
+
+    def app_secret
+      Kracken.config.app_secret
     end
   end
 end
