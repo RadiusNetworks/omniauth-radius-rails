@@ -13,18 +13,14 @@ module Kracken
           "first_name": "admin",
           "last_name": "admin",
           "status": "Active",
-          "expiration_date": "2014-12-03",
           "created_at": "2013-12-03T19:27:22.433Z",
           "updated_at": "2013-12-03T20:28:19.955Z",
           "company": null,
           "country": "United States",
           "terms_of_service": true,
-          "initial_service_code": null,
-          "initial_plan_code": null,
-          "customer_id": "cus_33VtUAeh7B43Ou",
-          "subscription_id": 2,
           "uid": 2,
           "accounts": [],
+          "teams": [],
           "plans": [
             {
               "feature_level": "pro",
@@ -56,11 +52,8 @@ module Kracken
 
       login.login!
 
-
       expect(user_double).to have_received(:uid).with(2)
     end
-
-
   end
 end
 
