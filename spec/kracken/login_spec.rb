@@ -51,7 +51,7 @@ module Kracken
       allow(login).to receive(:user_class).and_return(user_double)
       allow(login).to receive(:connection).and_return(conn_double)
 
-      login.login_and_create_user
+      login.login_and_create_user!
 
       expect(user_double).to have_received(:uid).with(2)
     end

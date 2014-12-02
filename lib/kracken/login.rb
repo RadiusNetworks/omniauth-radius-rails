@@ -8,7 +8,7 @@ module Kracken
       @password = password
     end
 
-    def login_and_create_user
+    def login_and_create_user!
       auth_hash = perform_login
 
       auth_hash ? user_class.find_or_create_from_auth_hash(auth_hash) : nil
