@@ -44,12 +44,13 @@ module Kracken
     end
 
     it "parses the json and updates the user" do
-      Faraday.stub(:get).and_return(response)
+      allow(Faraday).to receive(:get).and_return(response)
       updater = Updater.new :fake_token
 
       user_double = FakeUser.new
-      user_double.stub(:uid)
-      updater.stub(:user_class).and_return(user_double)
+      allow(user_double).to receive(:uid)
+      allow(user_double).to receive(:provider)
+      allow(updater).to receive(:user_class).and_return(user_double)
 
       updater.refresh_with_oauth!
 

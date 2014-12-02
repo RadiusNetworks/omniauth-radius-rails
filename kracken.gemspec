@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'faraday', '~> 0.8'
   s.add_dependency 'omniauth-oauth2', '~> 1.1'
 
-  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'rspec-rails', '>= 3.0.0.rc1'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'pry-nav'
 end

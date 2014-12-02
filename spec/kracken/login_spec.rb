@@ -40,7 +40,7 @@ module Kracken
     end
 
     it "parses the json and updates the user" do
-      Faraday.stub(:post).and_return(response)
+      allow(Faraday).to receive(:post).and_return(response)
       login = Login.new "rory@ponds.uk", "secret"
 
       user_double = FakeUser.new
