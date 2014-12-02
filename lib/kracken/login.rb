@@ -1,4 +1,5 @@
 module Kracken
+
   class Login
     attr_reader :email, :password
 
@@ -7,8 +8,10 @@ module Kracken
       @password = password
     end
 
-    def login!
-      user_class.find_or_create_from_auth_hash(auth_hash)
+    def login_and_create_user
+      auth_hash = perform_login
+
+      auth_hash ? user_class.find_or_create_from_auth_hash(auth_hash) : nil
     end
 
     private
@@ -34,22 +37,22 @@ module Kracken
       }
     end
 
-    def login
+    def perform_login
       response = connection.post do |req|
         req.url '/auth/radius/login.json'
         req.headers['Content-Type'] = 'application/json'
         req.body = body.to_json
       end
 
-      create_auth_hash JSON.parse(response.body)
+      if response.success?
+        create_auth_hash JSON.parse(response.body)
+      else
+        nil
+      end
     end
 
     def connection
-      @connection ||= Faraday.new(:url => PROVIDER_URL)
-    end
-
-    def auth_hash
-      @auth_hash ||= login
+      @connection ||= Faraday.new(url: PROVIDER_URL)
     end
 
     def user_class
