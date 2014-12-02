@@ -46,11 +46,12 @@ module Kracken
       user_double = FakeUser.new
       allow(user_double).to receive(:uid)
       conn_double = double(:connection)
-      allow(conn_double).to receive(:post).and_return(OpenStruct.new body: json)
+      body_double = double(:response, body: json, "success?" => true)
+      allow(conn_double).to receive(:post).and_return(body_double)
       allow(login).to receive(:user_class).and_return(user_double)
       allow(login).to receive(:connection).and_return(conn_double)
 
-      login.login!
+      login.login_and_create_user
 
       expect(user_double).to have_received(:uid).with(2)
     end
