@@ -106,15 +106,17 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
          "accounts"=>[{"id"=>1, "name"=>"Radius Networks", "uid"=>1}]}}}}}
 ```
 
-# Additional API
+# Beyond OAuth
 
-## Login
+## Proxy Login
 
 Alows direct login to the Kracken Server. This will also call the user model configured in the initializer with `find_or_create_from_auth_hash` then return that user model.
 
 ```
 user = Kracken::Login.new(email, password).login_and_create_user!
 ```
+
+This requires the `app_id` and `app_secret` be set in the initializer.
 
 ## Update with OAuth Token
 
