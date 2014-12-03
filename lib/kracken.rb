@@ -4,6 +4,7 @@ require "kracken/engine"
 require "kracken/config"
 require "kracken/controllers/authenticatable"
 require "kracken/updater"
+require "kracken/login"
 
 module Kracken
   mattr_accessor :config

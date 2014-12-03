@@ -105,3 +105,27 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
          "uid"=>1,
          "accounts"=>[{"id"=>1, "name"=>"Radius Networks", "uid"=>1}]}}}}}
 ```
+
+# Beyond OAuth
+
+## Proxy Login
+
+Alows direct login to the Kracken Server. This will also call the user model configured in the initializer with `find_or_create_from_auth_hash` then return that user model.
+
+```
+user = Kracken::Login.new(email, password).login_and_create_user!
+```
+
+This requires the `app_id` and `app_secret` be set in the initializer.
+
+## Update with OAuth Token
+
+The OAuth exchange will create a `refresh_token` which can be used to request and update to the `auth_hash`. Typical [usage](https://github.com/RadiusNetworks/gamera/blob/sdk-config-kit-options/app/controllers/application_controller.rb):
+
+```
+updater = Kracken::Updater.new current_user.credentials.token
+updater.refresh_with_oauth!
+current_user.reload
+```
+
+
