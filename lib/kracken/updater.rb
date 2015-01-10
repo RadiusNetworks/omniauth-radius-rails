@@ -2,8 +2,8 @@ module Kracken
   class Updater
     attr_reader :token
 
-    def initialize(oauth_token)
-      @token = oauth_token
+    def initialize(token)
+      @token = token
     end
 
     def refresh_with_oauth!

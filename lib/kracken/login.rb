@@ -55,10 +55,6 @@ module Kracken
       @connection ||= Faraday.new(url: PROVIDER_URL)
     end
 
-    def user_class
-      Kracken.config.user_class
-    end
-
     def app_id
       Kracken.config.app_id
     end

@@ -1,0 +1,54 @@
+module Kracken
+  module Controllers
+    module TokenAuthenticatable
+      def self.included(klass)
+        klass.define_singleton_method(:realm) do |realm = nil|
+          realm ||= (superclass.try(:realm) || 'Application')
+          @realm = realm
+        end
+
+        klass.instance_exec do
+          skip_before_action :verify_authenticity_token
+          before_action :authenticate_user_with_token!
+          helper_method :current_user
+        end
+      end
+
+      private
+
+      # `authenticate_or_request_with_http_token` is a nice Rails helper:
+      # http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Token/ControllerMethods.html#method-i-authenticate_or_request_with_http_token
+      def authenticate_user_with_token!
+        munge_header_auth_token!
+
+        authenticate_or_request_with_http_token(realm) { |token, _options|
+          # Attempt to reduce namespace conflicts with controllers which may access
+          # an team instance for display.
+          @_current_user = Updater.new(token).refresh_with_oauth!
+        }
+      end
+
+      def current_user
+        @_current_user
+      end
+
+      # Make it **explicit** that we are munging the `token` param with the
+      # authorization header.
+      #
+      # Yes, this is very much a hack. However, it makes it clear what we are
+      # doing. It also defines a single authoritative source for how we handle
+      # authorization alternatives. This then allows other Rails and app code to
+      # work normally with authorization headers; without having to repeat or
+      # transfer the knowledge about also checking for the params.
+      def munge_header_auth_token!
+        return unless params[:token]
+        request.env['HTTP_AUTHORIZATION'] = "Token token=\"#{params[:token]}\""
+      end
+
+      def realm
+        self.class.realm
+      end
+    end
+
+  end
+end

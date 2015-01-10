@@ -3,6 +3,8 @@ require "kracken/env"
 require "kracken/engine"
 require "kracken/config"
 require "kracken/controllers/authenticatable"
+require "kracken/controllers/token_authenticatable"
+require "kracken/controllers/json_api_compatible"
 require "kracken/updater"
 require "kracken/login"
 
