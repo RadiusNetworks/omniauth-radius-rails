@@ -8,7 +8,7 @@ module Kracken
     end
 
     def user_class
-      @user_class || User
+      @user_class || ::User
     end
   end
 end
