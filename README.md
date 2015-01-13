@@ -113,7 +113,7 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
 Alows direct login to the Kracken Server. This will also call the user model configured in the initializer with `find_or_create_from_auth_hash` then return that user model.
 
 ```
-user = Kracken::Login.new(email, password).login_and_create_user!
+user = Kracken::Authenticator.user_with_credentials(email, password)
 ```
 
 This requires the `app_id` and `app_secret` be set in the initializer.
@@ -123,8 +123,8 @@ This requires the `app_id` and `app_secret` be set in the initializer.
 The OAuth exchange will create a `refresh_token` which can be used to request and update to the `auth_hash`. Typical [usage](https://github.com/RadiusNetworks/gamera/blob/sdk-config-kit-options/app/controllers/application_controller.rb):
 
 ```
-updater = Kracken::Updater.new current_user.credentials.token
-updater.refresh_with_oauth!
+user = Kracken::Authenticator.user_with_credentials(email, password)
+# Might want to reload the current_user model
 current_user.reload
 ```
 

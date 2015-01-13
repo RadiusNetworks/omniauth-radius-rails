@@ -10,10 +10,16 @@ class User
     user = self.new(hash)
     @@users[hash["uid"]] = user
   end
+
   def initialize(hash)
     @hash = hash
   end
+
   def id
+    @hash["uid"]
+  end
+
+  def uid
     @hash["uid"]
   end
 end

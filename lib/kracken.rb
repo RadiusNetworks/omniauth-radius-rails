@@ -1,12 +1,13 @@
-
 require "kracken/env"
+require "kracken/error"
 require "kracken/engine"
 require "kracken/config"
 require "kracken/controllers/authenticatable"
 require "kracken/controllers/token_authenticatable"
 require "kracken/controllers/json_api_compatible"
-require "kracken/updater"
-require "kracken/login"
+require "kracken/token_authenticator"
+require "kracken/credential_authenticator"
+require "kracken/authenticator"
 
 module Kracken
   mattr_accessor :config

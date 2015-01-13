@@ -45,9 +45,12 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    addressable (2.3.6)
     arel (6.0.0)
     builder (3.2.2)
     coderay (1.1.0)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
     diff-lcs (1.2.5)
     erubis (2.7.0)
     faraday (0.9.0)
@@ -136,6 +139,7 @@ GEM
       rspec-mocks (~> 3.1.0)
       rspec-support (~> 3.1.0)
     rspec-support (3.1.2)
+    safe_yaml (1.0.3)
     slop (3.6.0)
     sprockets (2.12.3)
       hike (~> 1.2)
@@ -151,6 +155,9 @@ GEM
     tilt (1.4.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    webmock (1.18.0)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
 
 PLATFORMS
   ruby
@@ -160,3 +167,4 @@ DEPENDENCIES
   pry
   pry-nav
   rspec-rails (>= 3.0.0.rc1)
+  webmock
