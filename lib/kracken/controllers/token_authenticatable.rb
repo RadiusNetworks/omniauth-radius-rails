@@ -1,14 +1,13 @@
 module Kracken
   module Controllers
     module TokenAuthenticatable
-      def self.included(klass)
-        klass.define_singleton_method(:realm) do |realm = nil|
+      def self.included(base)
+        base.define_singleton_method(:realm) do |realm = nil|
           realm ||= (superclass.try(:realm) || 'Application')
           @realm = realm
         end
 
-        klass.instance_exec do
-          skip_before_action :verify_authenticity_token
+        base.instance_exec do
           before_action :authenticate_user_with_token!
           helper_method :current_user
         end

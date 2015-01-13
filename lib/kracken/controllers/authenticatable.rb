@@ -3,11 +3,11 @@ module Kracken
     module Authenticatable
 
       def self.included(base)
-        base.send :helper_method, :sign_out_path
-        base.send :helper_method, :sign_up_path
-        base.send :helper_method, :sign_in_path
-        base.send :helper_method, :current_user
-        base.send :helper_method, :user_signed_in?
+        base.instance_exec do
+          before_action :authenticate_user!
+          helper_method :sign_out_path, :sign_up_path, :sign_in_path,
+                        :current_user, :user_signed_in?
+        end
       end
 
       def sign_out_path

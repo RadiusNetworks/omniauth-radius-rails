@@ -1,9 +1,10 @@
 module Kracken
   module Controllers
     module JsonApiCompatible
-      def self.included(klass)
-        klass.instance_exec do
+      def self.included(base)
+        base.instance_exec do
           before_action :munge_chained_param_ids!
+          skip_before_action :verify_authenticity_token
 
           unless Rails.env.development? # ZOMG
             rescue_from StandardError do |error|
