@@ -1,6 +1,6 @@
 module Kracken
   class Authenticator
-    attr_reader :auth_hash
+    attr_reader :auth_hash, :user_class
 
     ## Factory Methods
 
@@ -20,6 +20,7 @@ module Kracken
 
     def initialize(response, user_class=Kracken.config.user_class)
       @auth_hash = create_auth_hash(response)
+      @user_class = user_class
     end
 
     # Convert this Factory to a User object per the host app.
@@ -37,8 +38,5 @@ module Kracken
       })
     end
 
-    def user_class
-      Kracken.config.user_class
-    end
   end
 end
