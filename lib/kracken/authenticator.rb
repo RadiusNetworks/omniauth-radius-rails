@@ -32,8 +32,8 @@ module Kracken
     def create_auth_hash(response_hash)
       Hashie::Mash.new({
         provider: response_hash['provider'],
-        uid: response_hash['attributes']['uid'],
-        extra: { raw_info: response_hash }
+        uid: response_hash['uid'],
+        info: response_hash['info']
       })
     end
 

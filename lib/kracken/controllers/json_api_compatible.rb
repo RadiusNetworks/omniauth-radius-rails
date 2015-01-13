@@ -6,15 +6,15 @@ module Kracken
           before_action :munge_chained_param_ids!
           skip_before_action :verify_authenticity_token
 
-          unless Rails.env.development? # ZOMG
-            rescue_from StandardError do |error|
-              render_json_error 500, error
-            end
+          rescue_from StandardError do |error|
+            render_json_error 500, error
+          end
 
-            rescue_from ActionController::RoutingError do |error|
-              render_json_error 404, error
-            end
+          rescue_from ActionController::RoutingError do |error|
+            render_json_error 404, error
+          end
 
+          if defined? ActiveRecord
             rescue_from ActiveRecord::RecordNotFound do |error|
               render_json_error 404, error
             end
@@ -31,6 +31,7 @@ module Kracken
       end
 
       def render_json_error(status, error)
+        # TODO: Re-raise if request.local? is true
         notify_bugsnag(error)
         body = {error: {message: error.message, backtrace: error.backtrace}}
         render status: status, json: body

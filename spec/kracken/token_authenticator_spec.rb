@@ -2,16 +2,7 @@ require 'spec_helper'
 
 module Kracken
   describe TokenAuthenticator do
-    let(:json){ <<-EOF
-      {
-        "provider": "radius",
-        "id": "2",
-        "attributes": {
-          "uid": 2
-        }
-      }
-      EOF
-    }
+    let(:json){ Fixtures.auth_hash.to_json }
 
     def set_request(status, body=nil)
       stub_request(:get, "https://account.radiusnetworks.com/auth/radius/user.json?oauth_token=secret")
@@ -23,7 +14,7 @@ module Kracken
       set_request 200, json
 
       response = login.fetch "secret"
-      expect(response['attributes']['uid']).to eq 2
+      expect(response['uid']).to eq "1"
     end
 
     it "raises an error on 500" do

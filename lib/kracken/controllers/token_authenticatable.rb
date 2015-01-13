@@ -13,6 +13,8 @@ module Kracken
         end
       end
 
+      attr_reader :current_user
+
       private
 
       # `authenticate_or_request_with_http_token` is a nice Rails helper:
@@ -23,12 +25,8 @@ module Kracken
         authenticate_or_request_with_http_token(realm) { |token, _options|
           # Attempt to reduce namespace conflicts with controllers which may access
           # an team instance for display.
-          @_current_user = Authenticator.user_with_token(token)
+          @current_user = Authenticator.user_with_token(token)
         }
-      end
-
-      def current_user
-        @_current_user
       end
 
       # Make it **explicit** that we are munging the `token` param with the

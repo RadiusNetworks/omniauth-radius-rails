@@ -15,23 +15,29 @@ module OmniAuth
       end
 
       option :client_options, {
-        :site => provider_url,
-        :authorize_url => "#{provider_url}/auth/radius/authorize",
-        :access_token_url => "#{provider_url}/auth/radius/access_token"
+        site: provider_url,
+        authorize_url: "#{provider_url}/auth/radius/authorize",
+        access_token_url: "#{provider_url}/auth/radius/access_token"
       }
 
       uid { raw_info['id'] }
 
       info do
-        {
-          :name => raw_info['name'],
-          :email => raw_info['email']
+        raw_info["attributes"].slice *%w{
+          first_name
+          last_name
+          email
+          uid
+          confirmed
+          teams
+          admin
+          subscription_level
         }
       end
 
       extra do
         {
-          'raw_info' => raw_info
+          raw_info: raw_info
         }
       end
 
