@@ -14,6 +14,9 @@ module Kracken
       def self.helper_method(*)
       end
 
+      def self.before_action(*)
+      end
+
       def root_url
         "/"
       end
