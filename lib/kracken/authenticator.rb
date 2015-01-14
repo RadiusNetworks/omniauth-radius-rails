@@ -18,14 +18,13 @@ module Kracken
       response ? self.new(response).to_app_user : nil
     end
 
-    def initialize(response, user_class=Kracken.config.user_class)
+    def initialize(response)
       @auth_hash = create_auth_hash(response)
-      @user_class = user_class
     end
 
     # Convert this Factory to a User object per the host app.
     def to_app_user
-      user_class.find_or_create_from_auth_hash(auth_hash)
+      Kracken.config.user_class.find_or_create_from_auth_hash(auth_hash)
     end
 
     private
