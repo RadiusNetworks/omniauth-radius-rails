@@ -42,6 +42,11 @@ module Kracken
         Kracken::SpecHelper.current_user
       end
     end
+    module TokenAuthenticatable
+      def current_user
+        Kracken::SpecHelper.current_user
+      end
+    end
   end
 end
 

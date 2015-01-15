@@ -20,13 +20,15 @@ module Kracken
       # `authenticate_or_request_with_http_token` is a nice Rails helper:
       # http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Token/ControllerMethods.html#method-i-authenticate_or_request_with_http_token
       def authenticate_user_with_token!
-        munge_header_auth_token!
+        unless current_user
+          munge_header_auth_token!
 
-        authenticate_or_request_with_http_token(realm) { |token, _options|
-          # Attempt to reduce namespace conflicts with controllers which may access
-          # an team instance for display.
-          @current_user = Authenticator.user_with_token(token)
-        }
+          authenticate_or_request_with_http_token(realm) { |token, _options|
+            # Attempt to reduce namespace conflicts with controllers which may access
+            # an team instance for display.
+            @current_user = Authenticator.user_with_token(token)
+          }
+        end
       end
 
       # Make it **explicit** that we are munging the `token` param with the
