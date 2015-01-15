@@ -24,6 +24,7 @@ module Kracken
 
     # Convert this Factory to a User object per the host app.
     def to_app_user
+      raise MissingUIDError unless auth_hash.uid
       Kracken.config.user_class.find_or_create_from_auth_hash(auth_hash)
     end
 
