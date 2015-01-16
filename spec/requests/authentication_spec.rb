@@ -11,7 +11,7 @@ module Kracken
       expect(response).to redirect_to("/auth/radius?origin=%2Fwelcome%2Fsecure_page")
     end
 
-    it "is redirected to the oauth server if there is no current user" do
+    it "returns an unprotected page if there is no current user" do
       get "/welcome/index"
       expect(response.status).to be 200
     end
