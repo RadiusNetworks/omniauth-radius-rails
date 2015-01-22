@@ -1,5 +1,10 @@
 module Kracken
   class SessionsController < ApplicationController
+    skip_before_filter :authenticate_user!, except: [:index]
+
+    def index
+    end
+
     def create
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
       current_user = @user
@@ -15,10 +20,6 @@ module Kracken
 
     def failure
       render text: "Sorry, but you didn't allow access to our app!"
-    end
-
-    def index
-      authenticate_user!
     end
 
     protected

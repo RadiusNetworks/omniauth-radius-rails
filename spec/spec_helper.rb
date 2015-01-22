@@ -1,6 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 require 'rspec/rails'
+require 'webmock/rspec'
 require 'pry'
 
 Rails.backtrace_cleaner.remove_silencers!
@@ -38,7 +39,7 @@ RSpec.configure do |config|
   # Print the 10 slowest examples and example groups at the
   # end of the spec run, to help surface which specs are running
   # particularly slow.
-  config.profile_examples = 10
+  #config.profile_examples = 10
 
   # If true, the base class of anonymous controllers will be inferred
   # automatically. This will be the default behavior in future versions of

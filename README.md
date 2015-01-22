@@ -4,34 +4,67 @@ Rails Engine for use with the Radius Networks Account Server, which is also know
 
 [![Build Status](https://travis-ci.org/RadiusNetworks/omniauth-radius-rails.svg)](https://travis-ci.org/RadiusNetworks/omniauth-radius-rails)
 
-# Usage
-
 ## A note about the name
 
-the repo is called `omniauth-radius-rails` which is mostly to be an indicator of what this repo does, and to be below the radar on our github page. The gem itself is called `kracken`, and so it's top level namespace is `Kracken`.
+The repo is called `omniauth-radius-rails` which is mostly to be an indicator of what this repo does, and to be below the radar on our github page. The gem itself is called `kracken`, and so it's top level namespace is `Kracken`.
 
-## Control access on a controller
+# Usage
 
-You can restrict access to one of you controllers by adding a before filter.
+This Rails engine will do a number of things around authentication, users and teams. But is specifically designe to be agnostic data models and the like. The primary use is to enable an app to to login via OAuth with Kracken. This is normally accomplished with a few controller mix-ins and a mounted engine to handle the callbacks.
 
-```ruby
-before_filter :authenticate_user!
-```
 
-To get access to those helpers you will want to mixin the Authenticatable module. Normally this is done in your apps `ApplicationController`
+In general there are two main mix-ins, one for normal web use and another for creating a public API.
 
-```ruby
-include Kracken::Controllers::Authenticatable
-```
 
-## Helpers
+## Controllers
 
-Authenticatable includes helpers such as
+Two main types of controller mix-ins. Web Controllers for normal browser based web pages and API Controllers for API access and common helpers.
 
+### Authenticatable
+
+To authenticate users using the session and provide a number of HTML helpers, use the `Authenticatable` mix-in.
+
+Filters
+
+* `authenticate_user!` Set the current user from the browser session.
+
+Helpers
+
+* `current_user`
 * `sign_out_path`
 * `sign_up_path`
 * `sign_in_path`
+
+
+#### Token Authenticatable
+
+To authenticate via a API token use the `TokenAuthenticatable` mix-in.
+
+Filters
+
+* `authenticate_user_with_token!` Set the current user from the token header.
+
+Helpers
+
 * `current_user`
+
+Skips `verify_authenticity_token` since it is a
+
+#### JSON API Compatible
+
+Configure a controller to be a JSON api with sensable defaults
+
+Filters
+
+* Skip `verify_authenticity_token` since we are not posting form data from a browser
+* Run `munge_header_auth_token` to split a list of IDs by commas
+
+It will also set `rescue_from` handlers to render errors as JSON responses.
+
+Helpers
+
+* `render_json_error` create standard json error response format and render the request
+
 
 # Install
 
@@ -53,7 +86,7 @@ end
 
 You can also set `ENV['RADIUS_OAUTH_PROVIDER_URL']` if you want to override the location of the account server.
 
-### 3. Add routes
+### 3. Mount Engine
 
 In `config/routes.rb`:
 
@@ -61,7 +94,7 @@ In `config/routes.rb`:
 mount Kracken::Engine => 'auth'
 ```
 
-### 4. Have a user model
+### 4. User Model
 
 This engine will expect a top level `User` class, and expects it to respond to the following methods:
 
@@ -106,14 +139,30 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
          "accounts"=>[{"id"=>1, "name"=>"Radius Networks", "uid"=>1}]}}}}}
 ```
 
+### 5. Configure App Controller
+
+Include the mix-in in your Applicaiton Controller:
+
+```
+include Kracken::Controllers::Authenticatable
+```
+
+Note that this will call the `authenticate_user!` before action by default, so if you want to provide access to a page with out authentication that needs to be skipped:
+
+```
+skip_filter :authenticate_user!, except: [:secure_action]
+```
+
 # Beyond OAuth
 
 ## Proxy Login
 
-Alows direct login to the Kracken Server. This will also call the user model configured in the initializer with `find_or_create_from_auth_hash` then return that user model.
+Alows direct login to the Kracken Server. Normally used for logging in a user
+via a mobile app.  This will also call the user model configured in the
+initializer with `find_or_create_from_auth_hash` then return that user model.
 
 ```
-user = Kracken::Login.new(email, password).login_and_create_user!
+user = Kracken::Authenticator.user_with_credentials(email, password)
 ```
 
 This requires the `app_id` and `app_secret` be set in the initializer.
@@ -123,8 +172,8 @@ This requires the `app_id` and `app_secret` be set in the initializer.
 The OAuth exchange will create a `refresh_token` which can be used to request and update to the `auth_hash`. Typical [usage](https://github.com/RadiusNetworks/gamera/blob/sdk-config-kit-options/app/controllers/application_controller.rb):
 
 ```
-updater = Kracken::Updater.new current_user.credentials.token
-updater.refresh_with_oauth!
+Kracken::Authenticator.user_with_token(current_user.credentials.token)
+# Might want to reload the current_user model
 current_user.reload
 ```
 

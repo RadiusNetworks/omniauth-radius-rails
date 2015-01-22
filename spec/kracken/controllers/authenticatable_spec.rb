@@ -4,21 +4,6 @@ require 'spec_helper'
 module Kracken
   module Controllers
 
-    class BaseControllerDouble
-      attr_accessor :session
-
-      def initialize
-        @session = {}
-      end
-
-      def self.helper_method(*)
-      end
-
-      def root_url
-        "/"
-      end
-    end
-
     class ControllerDouble < BaseControllerDouble
       include Kracken::Controllers::Authenticatable
     end
