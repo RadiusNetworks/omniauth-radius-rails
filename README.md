@@ -113,30 +113,46 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
 ```ruby
 {"provider"=>"radius",
  "uid"=>"1",
+ "info"=>
+  {"first_name"=>"admin",
+   "last_name"=>"admin",
+   "email"=>"admin@radiusnetworks.com",
+   "uid"=>1,
+   "confirmed"=>true,
+   "teams"=>[{"id"=>1, "name"=>"Spiffy", "uid"=>1}],
+   "admin"=>true,
+   "subscription_level"=>"pro"},
  "credentials"=>
-  {"token"=>"IAMATOKEN",
-   "refresh_token"=>"IAMATOKEN",
-   "expires_at"=>1377616922,
+  {"token"=>"c3dcf656bcd54d757172d0a22a6d101d",
+   "refresh_token"=>"7ac5efecc749749bcf3ce6ee6f878178",
+   "expires_at"=>"2015-03-12T14:57:53.523Z",
    "expires"=>true},
  "extra"=>
   {"raw_info"=>
     {"provider"=>"radius",
-     "id"=>"3",
-     "attributes"=>
-      {"user"=>
-        {"admin"=>true,
-         "company"=>nil,
-         "country"=>"United States",
-         "created_at"=>"2000-01-00T00:00:00Z",
-         "email"=>"joe@example.com",
-         "expiration_date"=>"2000-01-00",
-         "first_name"=>"Joe",
-         "id"=>1,
-         "last_name"=>"Cool",
-         "status"=>"Active",
-         "updated_at"=>"2000-01-00T00:00:00Z",
-         "uid"=>1,
-         "accounts"=>[{"id"=>1, "name"=>"Radius Networks", "uid"=>1}]}}}}}
+     "id"=>"1",
+     "uid"=>"1",
+     "info"=>
+      {"id"=>1,
+       "email"=>"admin@radiusnetworks.com",
+       "admin"=>true,
+       "first_name"=>"admin",
+       "last_name"=>"admin",
+       "status"=>"Active",
+       "expiration_date"=>"2016-02-12",
+       "created_at"=>"2015-02-12T14:57:53.523Z",
+       "updated_at"=>"2015-03-10T17:40:35.621Z",
+       "company"=>nil,
+       "country"=>"United States",
+       "terms_of_service"=>true,
+       "initial_service_code"=>nil,
+       "initial_plan_code"=>nil,
+       "customer_id"=>nil,
+       "subscription_id"=>2,
+       "uid"=>1,
+       "confirmed"=>true,
+       "subscription_level"=>"pro",
+       "teams"=>[{"id"=>1, "name"=>"Spiffy", "uid"=>1}]}}}}
 ```
 
 ### 5. Configure App Controller
