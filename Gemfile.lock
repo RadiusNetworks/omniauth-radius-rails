@@ -139,7 +139,7 @@ GEM
       rspec-mocks (~> 3.1.0)
       rspec-support (~> 3.1.0)
     rspec-support (3.1.2)
-    safe_yaml (1.0.3)
+    safe_yaml (1.0.4)
     slop (3.6.0)
     sprockets (2.12.3)
       hike (~> 1.2)
