@@ -23,7 +23,7 @@ module OmniAuth
       uid { raw_info['id'] }
 
       info do
-        raw_info["attributes"].slice *%w{
+        raw_info["info"].slice *%w{
           first_name
           last_name
           email
