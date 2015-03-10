@@ -34,7 +34,8 @@ module Kracken
       Hashie::Mash.new({
         provider: response_hash['provider'],
         uid: response_hash['uid'],
-        info: response_hash['info']
+        info: response_hash['info'],
+        credentials: response_hash['credentials'],
       })
     end
 
