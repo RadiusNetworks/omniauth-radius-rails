@@ -90,6 +90,31 @@ module Kracken
 
           expect(User).to have_received(:find)
         end
+
+
+        context "user cache cookie" do
+          it "redirects when the cache cookie is different than the session" do
+            allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
+            allow(controller).to receive(:cookies).and_return({_radius_user_cache_key: "123"})
+            allow(controller).to receive(:redirect_to)
+
+            controller.authenticate_user!
+
+            expect(controller).to have_received(:redirect_to).with("/")
+          end
+
+          it "does not redirect when the cache cookie matches the session" do
+            allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
+            allow(controller).to receive(:redirect_to)
+
+            controller.cookies[:_radius_user_cache_key] = "123"
+            controller.session[:user_cache_key] = "123"
+
+            controller.authenticate_user!
+
+            expect(controller).to_not have_received(:redirect_to)
+          end
+        end
       end
 
     end

@@ -1,9 +1,10 @@
 module Kracken
   class BaseControllerDouble
-    attr_accessor :session
+    attr_accessor :session, :cookies
 
     def initialize
       @session = {}
+      @cookies = {}
     end
 
     def self.helper_method(*) ; end
