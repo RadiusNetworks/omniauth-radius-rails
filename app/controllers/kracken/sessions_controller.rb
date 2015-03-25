@@ -9,6 +9,7 @@ module Kracken
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
       current_user = @user
       session[:user_id] = @user.id
+      session[:user_cache_key] = cookies[:_radius_user_cache_key]
       redirect_to return_to_path
     end
 
