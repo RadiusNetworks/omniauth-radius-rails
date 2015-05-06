@@ -4,6 +4,7 @@ module Kracken
 
       def self.included(base)
         base.instance_exec do
+          before_action :handle_user_cache_cookie!
           before_action :authenticate_user!
           helper_method :sign_out_path, :sign_up_path, :sign_in_path,
                         :current_user, :user_signed_in?
@@ -33,9 +34,7 @@ module Kracken
       end
 
       def authenticate_user!
-        if user_signed_in?
-          handle_user_cache_cookie
-        else
+        unless user_signed_in?
           if request.format == :json
             render json: {error: '401 Unauthorized'}, status: :unauthorized
           else
@@ -43,6 +42,43 @@ module Kracken
           end
         end
       end
+
+      # We needed a way to update the user information on kracken and
+      # automatically update all the client apps. Instead of pushing changes
+      # to all the apps we added a cookie that will act as an indicator that
+      # the user is stale and they need to refresh them.
+      #
+      # The refresh is accomplished by redirecting to the normal oauth flow
+      # which will simply redirect the back if they are already signed in (or
+      # ask for a user/pass if they are not).
+      #
+      # This method will:
+      #
+      #  - Check for the `_radius_user_cache_key` tld cookie
+      #  - If the key is "none" log them out
+      #  - Compare it to the `user_cache_key` in the session
+      #  - If they don't match, redirect them to the oauth provider and
+      #    delete the cookie
+      #
+      def handle_user_cache_cookie!
+        if cookies[:_radius_user_cache_key]
+          if cookies[:_radius_user_cache_key] == "none"
+            # Sign out current user
+            session.delete :user_id
+
+            # Clear that user's cache key
+            session.delete :user_cache_key
+
+          elsif session[:user_cache_key] != cookies[:_radius_user_cache_key]
+            # Delete the cookie to prevent redirect loops
+            cookies.delete :_radius_user_cache_key
+
+            # Redirect to the account app
+            redirect_to_sign_in
+          end
+        end
+      end
+
 
       def current_user=(u)
         @current_user = u
@@ -91,35 +127,6 @@ module Kracken
         end
       end
 
-      # We needed a way to update the user information on kracken and
-      # automatically update all the client apps. Instead of pushing changes
-      # to all the apps we added a cookie that will act as an indicator that
-      # the user is stale and they need to refresh them.
-      #
-      # The refresh is accomplished by redirecting to the normal oauth flow
-      # which will simply redirect the back if they are already signed in (or
-      # ask for a user/pass if they are not).
-      #
-      # This method will:
-      #
-      #  - Check for the `_radius_user_cache_key` tld cookie
-      #  - Compare it to the `user_cache_key` in the session
-      #  - If they don't match, redirect them to the oauth provider and
-      #    delete the cookie
-      #
-      def handle_user_cache_cookie
-        if cookies[:_radius_user_cache_key]
-          if session[:user_cache_key] != cookies[:_radius_user_cache_key]
-            # Delete the cookie to prevent redirect loops
-            cookies.delete :_radius_user_cache_key
-
-            # Redirect to the account app
-            redirect_to_sign_in
-          end
-        end
-      end
-
     end
-
   end
 end
