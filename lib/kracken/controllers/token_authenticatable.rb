@@ -13,10 +13,11 @@ module Kracken
 
           rescue_from Kracken::RequestError do |_|
             # TODO: Handle other types of errors (such as if the server is down)
-            raise Kracken::Controllers::JsonApiCompatible::TokenUnauthorized,
+            raise TokenUnauthorized,
               "Invalid credentials"
           end
         end
+
 
       end
 
@@ -49,14 +50,6 @@ module Kracken
       def munge_header_auth_token!
         return unless params[:token]
         request.env['HTTP_AUTHORIZATION'] = "Token token=\"#{params[:token]}\""
-      end
-
-      # Customize the `authenticate_or_request_with_http_token` process:
-      # http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Token/ControllerMethods.html#method-i-request_http_token_authentication
-      def request_http_token_authentication(realm = 'Application')
-        # Modified from https://github.com/rails/rails/blob/60d0aec7/actionpack/lib/action_controller/metal/http_authentication.rb#L490-L499
-        headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
-        render json: { error: 'HTTP Token: Access denied.' }, status: :unauthorized
       end
 
       def realm

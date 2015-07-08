@@ -4,25 +4,6 @@ module Kracken
   module Controllers
     module JsonApiCompatible
 
-      class ResourceNotFound < StandardError
-        attr_reader :missing_ids, :resource
-        def initialize(resource, missing_ids)
-          @missing_ids = Array(missing_ids)
-          @resource    = resource
-          super(
-            "Couldn't find #{resource} with id(s): #{missing_ids.join(', ')}"
-          )
-        end
-      end
-
-      class TokenUnauthorized < StandardError
-        def initialize(msg = nil)
-          msg ||= 'HTTP Token: Access denied.'
-          super(msg)
-        end
-      end
-
-      class UnprocessableEntity < StandardError; end
 
       module MungeAndMirror
         # Wraps the data root in an Array, if it is not already an Array. This

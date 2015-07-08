@@ -4,9 +4,9 @@ module Kracken
       cattr_accessor :rescue_with_details_responses
       @@rescue_with_details_responses = Hash.new
       @@rescue_with_details_responses.merge!(
-        'Kracken::Controllers::JsonApiCompatible::ResourceNotFound' => :not_found,
-        'Kracken::Controllers::JsonApiCompatible::TokenUnauthorized' => :unauthorized,
-        'Kracken::Controllers::JsonApiCompatible::UnprocessableEntity' => :unprocessable_entity,
+        'Kracken::Controllers::ResourceNotFound' => :not_found,
+        'Kracken::Controllers::TokenUnauthorized' => :unauthorized,
+        'Kracken::Controllers::UnprocessableEntity' => :unprocessable_entity,
       )
 
       def self.status_code_for_exception(class_name)
