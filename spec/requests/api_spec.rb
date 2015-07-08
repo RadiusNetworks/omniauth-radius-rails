@@ -11,7 +11,7 @@ module Kracken
 
     describe "authenticatable resource", type: :request do
       it "will raise error if there is no token" do
-        expect{get api_index_path}.to raise ::Kracken::Controllers::TokenUnauthorized
+        expect{get api_index_path}.to raise_error Kracken::Controllers::TokenUnauthorized
       end
 
       it "is redirected to the oauth server if there is no current user" do
