@@ -86,12 +86,6 @@ module Kracken
         end
       end
 
-      # NOTE: Monkey-patch until this is merged into the gem
-      def request_http_token_authentication(realm = 'Application')
-        headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
-        raise TokenUnauthorized
-      end
-
       module DataIntegrity
         # Scan each item in the data root and enforce it has an id set.
         def enforce_resource_ids!

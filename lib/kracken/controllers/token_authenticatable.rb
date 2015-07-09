@@ -10,18 +10,18 @@ module Kracken
         base.instance_exec do
           before_action :authenticate_user_with_token!
           helper_method :current_user
-
-          rescue_from Kracken::RequestError do |_|
-            # TODO: Handle other types of errors (such as if the server is down)
-            raise TokenUnauthorized,
-              "Invalid credentials"
-          end
         end
 
 
       end
 
       attr_reader :current_user
+
+      # NOTE: Monkey-patch until this is merged into the gem
+      def request_http_token_authentication(realm = 'Application')
+        headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
+        raise TokenUnauthorized, "Invalid Credentials"
+      end
 
       private
 

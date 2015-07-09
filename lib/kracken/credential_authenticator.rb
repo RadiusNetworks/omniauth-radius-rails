@@ -10,6 +10,8 @@ module Kracken
       # An attempt to raise error when approprate:
       if response.status == 404
         nil
+      elsif response.status == 401
+        raise TokenUnauthorized, "Invalid credentials"
       elsif response.success?
         JSON.parse(response.body)
       else
