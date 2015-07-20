@@ -173,7 +173,7 @@ skip_filter :authenticate_user!, except: [:secure_action]
 
 ## Proxy Login
 
-Alows direct login to the Kracken Server. Normally used for logging in a user
+Allows direct login to the Kracken Server. Normally used for logging in a user
 via a mobile app.  This will also call the user model configured in the
 initializer with `find_or_create_from_auth_hash` then return that user model.
 
