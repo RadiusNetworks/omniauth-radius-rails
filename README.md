@@ -10,7 +10,7 @@ The repo is called `omniauth-radius-rails` which is mostly to be an indicator of
 
 # Usage
 
-This Rails engine will do a number of things around authentication, users and teams. But is specifically designe to be agnostic data models and the like. The primary use is to enable an app to to login via OAuth with Kracken. This is normally accomplished with a few controller mix-ins and a mounted engine to handle the callbacks.
+This Rails engine will do a number of things around authentication, users and teams. But is specifically designed to be agnostic data models and the like. The primary use is to enable an app to to login via OAuth with Kracken. This is normally accomplished with a few controller mix-ins and a mounted engine to handle the callbacks.
 
 
 In general there are two main mix-ins, one for normal web use and another for creating a public API.
