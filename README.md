@@ -52,7 +52,7 @@ Skips `verify_authenticity_token` since it is a
 
 #### JSON API Compatible
 
-Configure a controller to be a JSON api with sensable defaults
+Configure a controller to be a JSON api with sensible defaults
 
 Filters
 
