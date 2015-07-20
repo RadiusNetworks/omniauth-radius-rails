@@ -157,7 +157,7 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
 
 ### 5. Configure App Controller
 
-Include the mix-in in your Applicaiton Controller:
+Include the mix-in in your Application Controller:
 
 ```
 include Kracken::Controllers::Authenticatable
