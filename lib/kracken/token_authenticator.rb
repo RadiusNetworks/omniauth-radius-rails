@@ -12,7 +12,7 @@ module Kracken
       elsif response.status == 404
         raise TokenUnauthorized, "Invalid credentials"
       elsif !response.success?
-        raise RequestError
+        raise RequestError, "Token Authentication Failed. Status: #{response.status} token: #{token}"
       end
 
       self
