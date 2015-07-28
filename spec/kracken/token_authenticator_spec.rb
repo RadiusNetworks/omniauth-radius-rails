@@ -25,7 +25,7 @@ module Kracken
       expect{login.fetch "secret"}.to raise_error(RequestError)
     end
 
-    it "returns nil for a 404" do
+    it "raises an error on 404" do
       login = TokenAuthenticator.new
 
       set_request 404

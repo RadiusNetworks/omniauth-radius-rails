@@ -7,8 +7,8 @@ module Kracken
     # Login the user with their credentails. Used for proxying the
     # authentication to the auth server, normally from a mobile app
     def self.user_with_credentials(email, password)
-      response = Kracken::CredentialAuthenticator.new.fetch(email, password)
-      response ? self.new(response).to_app_user : nil
+      auth = Kracken::CredentialAuthenticator.new.fetch(email, password)
+      self.new(auth.body).to_app_user
     end
 
     # Login the user with an auth token. Used for API authentication for the

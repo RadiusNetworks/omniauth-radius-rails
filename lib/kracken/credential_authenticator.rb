@@ -1,27 +1,34 @@
 module Kracken
   class CredentialAuthenticator
+    attr_reader :response
+
     def fetch(email, password)
-      response = connection.post do |req|
+      @response = connection.post do |req|
         req.url '/auth/radius/login.json'
         req.headers['Content-Type'] = 'application/json'
-        req.body = body(email, password).to_json
+        req.body = post_body(email, password).to_json
       end
 
-      # An attempt to raise error when approprate:
-      if response.status == 404
-        nil
-      elsif response.status == 401
+      if response.status == 401
         raise TokenUnauthorized, "Invalid credentials"
-      elsif response.success?
+      elsif response.status == 404
+        raise TokenUnauthorized, "Invalid credentials"
+      elsif !response.success?
+        raise RequestError
+      end
+
+      self
+    end
+
+    def body
+      if response
         JSON.parse(response.body)
-      else
-        raise Kracken::RequestError
       end
     end
 
     private
 
-    def body(email, password)
+    def post_body(email, password)
       {
         user: {
           email: email,
