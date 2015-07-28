@@ -10,7 +10,7 @@ The repo is called `omniauth-radius-rails` which is mostly to be an indicator of
 
 # Usage
 
-This Rails engine will do a number of things around authentication, users and teams. But is specifically designe to be agnostic data models and the like. The primary use is to enable an app to to login via OAuth with Kracken. This is normally accomplished with a few controller mix-ins and a mounted engine to handle the callbacks.
+This Rails engine will do a number of things around authentication, users and teams. But is specifically designed to be agnostic data models and the like. The primary use is to enable an app to to login via OAuth with Kracken. This is normally accomplished with a few controller mix-ins and a mounted engine to handle the callbacks.
 
 
 In general there are two main mix-ins, one for normal web use and another for creating a public API.
@@ -52,7 +52,7 @@ Skips `verify_authenticity_token` since it is a
 
 #### JSON API Compatible
 
-Configure a controller to be a JSON api with sensable defaults
+Configure a controller to be a JSON api with sensible defaults
 
 Filters
 
@@ -157,7 +157,7 @@ Accepts one parameter which is a hash received from the OAuth server. It will be
 
 ### 5. Configure App Controller
 
-Include the mix-in in your Applicaiton Controller:
+Include the mix-in in your Application Controller:
 
 ```
 include Kracken::Controllers::Authenticatable
@@ -173,7 +173,7 @@ skip_filter :authenticate_user!, except: [:secure_action]
 
 ## Proxy Login
 
-Alows direct login to the Kracken Server. Normally used for logging in a user
+Allows direct login to the Kracken Server. Normally used for logging in a user
 via a mobile app.  This will also call the user model configured in the
 initializer with `find_or_create_from_auth_hash` then return that user model.
 
