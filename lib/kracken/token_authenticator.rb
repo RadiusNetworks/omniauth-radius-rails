@@ -19,11 +19,15 @@ module Kracken
     end
 
     def body
-      JSON.parse(response.body)
+      if response
+        JSON.parse(response.body)
+      end
     end
 
     def etag
-      response.headers["etag"]
+      if response
+        response.headers["etag"]
+      end
     end
 
     private
