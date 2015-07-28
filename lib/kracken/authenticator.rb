@@ -1,6 +1,6 @@
 module Kracken
   class Authenticator
-    attr_reader :auth_hash, :user_class
+    attr_reader :auth_hash
 
     ## Factory Methods
 
@@ -14,8 +14,11 @@ module Kracken
     # Login the user with an auth token. Used for API authentication for the
     # public APIs
     def self.user_with_token(token)
-      response = Kracken::TokenAuthenticator.new.fetch(token)
-      response ? self.new(response).to_app_user : nil
+      auth = Kracken::TokenAuthenticator.new.fetch(token)
+
+      Rails.cache.fetch("auth/#{token}/#{auth.etag}") do
+        self.new(auth.body).to_app_user
+      end
     end
 
     def initialize(response)
