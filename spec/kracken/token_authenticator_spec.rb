@@ -14,7 +14,7 @@ module Kracken
       set_request 200, json
 
       response = login.fetch "secret"
-      expect(response['uid']).to eq "1"
+      expect(response.body['uid']).to eq "1"
     end
 
     it "raises an error on 500" do
@@ -25,12 +25,12 @@ module Kracken
       expect{login.fetch "secret"}.to raise_error(RequestError)
     end
 
-    it "returns nil for a 404" do
+    it "raises an error on 404" do
       login = TokenAuthenticator.new
 
       set_request 404
 
-      expect(login.fetch "secret").to be_nil
+      expect{login.fetch "secret"}.to raise_error(TokenUnauthorized)
     end
 
   end

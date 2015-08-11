@@ -1,21 +1,33 @@
 module Kracken
   class Authenticator
-    attr_reader :auth_hash, :user_class
+    attr_reader :auth_hash
 
     ## Factory Methods
 
     # Login the user with their credentails. Used for proxying the
     # authentication to the auth server, normally from a mobile app
     def self.user_with_credentials(email, password)
-      response = Kracken::CredentialAuthenticator.new.fetch(email, password)
-      response ? self.new(response).to_app_user : nil
+      auth = Kracken::CredentialAuthenticator.new.fetch(email, password)
+      self.new(auth.body).to_app_user
     end
 
     # Login the user with an auth token. Used for API authentication for the
     # public APIs
     def self.user_with_token(token)
-      response = Kracken::TokenAuthenticator.new.fetch(token)
-      response ? self.new(response).to_app_user : nil
+      auth = Kracken::TokenAuthenticator.new.fetch(token)
+
+      # Don't want stale user models being pulled from the cache. So only
+      # cache the `user_id`.
+      #
+      # Don't want to query the database twice. So create a local variable
+      # for the user, set it to nil, fetch from cache and only query if there
+      # was a cache-hit (thus user is still nil).
+      user = nil
+      user_id = Rails.cache.fetch("auth/#{token}/#{auth.etag}") {
+        user = self.new(auth.body).to_app_user
+        user.id
+      }
+      user ||= Kracken.config.user_class.find(user_id)
     end
 
     def initialize(response)

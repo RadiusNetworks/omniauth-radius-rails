@@ -9,10 +9,9 @@ module Kracken
 
     let(:json){ Fixtures.auth_hash.to_json }
 
-    describe "requests to and authenticatable resource", type: :request do
-      it "Renders unauthorized if there is no token" do
-        get api_index_path
-        expect(response.status).to eq(401)
+    describe "authenticatable resource", type: :request do
+      it "will raise error if there is no token" do
+        expect{get api_index_path}.to raise_error Kracken::TokenUnauthorized
       end
 
       it "is redirected to the oauth server if there is no current user" do

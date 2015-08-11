@@ -11,9 +11,17 @@ module Kracken
           before_action :authenticate_user_with_token!
           helper_method :current_user
         end
+
+
       end
 
       attr_reader :current_user
+
+      # NOTE: Monkey-patch until this is merged into the gem
+      def request_http_token_authentication(realm = 'Application')
+        headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
+        raise TokenUnauthorized, "Invalid Credentials"
+      end
 
       private
 
@@ -42,14 +50,6 @@ module Kracken
       def munge_header_auth_token!
         return unless params[:token]
         request.env['HTTP_AUTHORIZATION'] = "Token token=\"#{params[:token]}\""
-      end
-
-      # Customize the `authenticate_or_request_with_http_token` process:
-      # http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Token/ControllerMethods.html#method-i-request_http_token_authentication
-      def request_http_token_authentication(realm = 'Application')
-        # Modified from https://github.com/rails/rails/blob/60d0aec7/actionpack/lib/action_controller/metal/http_authentication.rb#L490-L499
-        headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
-        render json: { error: 'HTTP Token: Access denied.' }, status: :unauthorized
       end
 
       def realm

@@ -1,19 +1,32 @@
 module Kracken
   class TokenAuthenticator
-
+    attr_reader :response
     def fetch(token)
-      response = connection.get do |req|
+      @response = connection.get do |req|
         req.url '/auth/radius/user.json'
         req.params['oauth_token'] = token
       end
 
-      # An attempt to raise error when approprate:
-      if response.status == 404
-        nil
-      elsif response.success?
+      if response.status == 401
+        raise TokenUnauthorized, "Invalid credentials"
+      elsif response.status == 404
+        raise TokenUnauthorized, "Invalid credentials"
+      elsif !response.success?
+        raise RequestError, "Token Authentication Failed. Status: #{response.status} token: #{token}"
+      end
+
+      self
+    end
+
+    def body
+      if response
         JSON.parse(response.body)
-      else
-        raise Kracken::RequestError
+      end
+    end
+
+    def etag
+      if response
+        response.headers["etag"]
       end
     end
 
@@ -22,5 +35,6 @@ module Kracken
     def connection
       @connection ||= Faraday.new(url: PROVIDER_URL)
     end
+
   end
 end
