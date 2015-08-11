@@ -16,9 +16,18 @@ module Kracken
     def self.user_with_token(token)
       auth = Kracken::TokenAuthenticator.new.fetch(token)
 
-      Rails.cache.fetch("auth/#{token}/#{auth.etag}") do
-        self.new(auth.body).to_app_user
-      end
+      # Don't want stale user models being pulled from the cache. So only
+      # cache the `user_id`.
+      #
+      # Don't want to query the database twice. So create a local variable
+      # for the user, set it to nil, fetch from cache and only query if there
+      # was a cache-hit (thus user is still nil).
+      user = nil
+      user_id = Rails.cache.fetch("auth/#{token}/#{auth.etag}") {
+        user = self.new(auth.body).to_app_user
+        user.id
+      }
+      user ||= Kracken.config.user_class.find(user_id)
     end
 
     def initialize(response)
