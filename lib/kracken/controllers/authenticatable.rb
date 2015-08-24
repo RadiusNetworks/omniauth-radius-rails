@@ -34,12 +34,19 @@ module Kracken
       end
 
       def authenticate_user!
+        check_token_expiry!
         unless user_signed_in?
           if request.format == :json
             render json: {error: '401 Unauthorized'}, status: :unauthorized
           else
             redirect_to_sign_in
           end
+        end
+      end
+
+      def check_token_expiry!
+        if session[:token_expires_at].nil? || session[:token_expires_at] < Time.now
+          session.delete :user_id
         end
       end
 
