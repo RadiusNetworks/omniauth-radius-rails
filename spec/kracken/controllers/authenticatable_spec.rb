@@ -95,7 +95,7 @@ module Kracken
         it "redirects to sign-in when token has expired" do
           allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
           allow(controller).to receive(:redirect_to)
-          controller.session[:token_expires_at] = 5.minutes.ago
+          controller.session[:token_expires_at] = Time.zone.now - 5.minutes
           controller.authenticate_user!
           expect(controller).to have_received(:redirect_to)
         end
@@ -103,7 +103,7 @@ module Kracken
         it "authenticates user when token has not expired" do
           allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
           allow(controller).to receive(:redirect_to)
-          controller.session[:token_expires_at] = Time.now + 5.minutes
+          controller.session[:token_expires_at] = Time.zone.now + 5.minutes
           controller.authenticate_user!
           expect(controller).to_not have_received(:redirect_to)
         end

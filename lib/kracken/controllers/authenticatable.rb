@@ -45,7 +45,7 @@ module Kracken
       end
 
       def check_token_expiry!
-        if session[:token_expires_at].nil? || session[:token_expires_at] < Time.now
+        if session[:token_expires_at].nil? || session[:token_expires_at] < Time.zone.now
           session.delete :user_id
         end
       end

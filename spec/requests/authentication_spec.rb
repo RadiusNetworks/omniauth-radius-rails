@@ -31,7 +31,7 @@ module Kracken
     it "sets :token_expires_at in the session" do
       OmniAuth.config.mock_auth[:radius] = OmniAuth::AuthHash.new(auth_hash)
       get "/auth/radius/callback"
-      expect(request.session[:token_expires_at]).to eq(Time.at(token_expiry))
+      expect(request.session[:token_expires_at]).to eq(Time.zone.at(token_expiry))
     end
   end
 end
