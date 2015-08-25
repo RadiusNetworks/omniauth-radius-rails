@@ -11,6 +11,7 @@ module Kracken
       current_user = @user
       session[:user_id] = @user.id
       session[:user_cache_key] = cookies[:_radius_user_cache_key]
+      session[:token_expires_at] = Time.zone.at(auth_hash[:credentials][:expires_at])
       redirect_to return_to_path
     end
 
