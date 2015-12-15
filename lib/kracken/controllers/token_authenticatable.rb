@@ -11,8 +11,6 @@ module Kracken
           before_action :authenticate_user_with_token!
           helper_method :current_user
         end
-
-
       end
 
       attr_reader :current_user
@@ -23,7 +21,7 @@ module Kracken
         raise TokenUnauthorized, "Invalid Credentials"
       end
 
-      private
+    private
 
       # `authenticate_or_request_with_http_token` is a nice Rails helper:
       # http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Token/ControllerMethods.html#method-i-authenticate_or_request_with_http_token
