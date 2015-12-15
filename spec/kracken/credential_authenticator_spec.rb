@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Kracken
-  describe CredentialAuthenticator do
+  RSpec.describe CredentialAuthenticator do
 
     let(:json){ Fixtures.auth_hash.to_json }
 

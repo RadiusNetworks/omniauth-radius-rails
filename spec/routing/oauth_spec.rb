@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Kracken
-    describe "Kracken OAuth Routes", type: :routing do
+    RSpec.describe "Kracken OAuth Routes", type: :routing do
       routes { Kracken::Engine.routes }
 
       it "sign_out routes to sessions" do

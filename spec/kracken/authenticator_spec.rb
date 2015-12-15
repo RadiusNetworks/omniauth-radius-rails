@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Kracken
-  describe Authenticator do
+  RSpec.describe Authenticator do
 
 
     describe ".with_credentials" do
