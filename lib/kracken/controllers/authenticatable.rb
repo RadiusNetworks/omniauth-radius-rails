@@ -92,8 +92,7 @@ module Kracken
       end
 
       def current_user
-        return @current_user if @current_user
-        fetch_current_user
+        @current_user ||= fetch_current_user
       end
 
       def fetch_current_user
