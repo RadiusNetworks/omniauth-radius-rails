@@ -32,7 +32,7 @@ module OAuthHelper
       get "/auth/radius"
       get response.header['Location']
 
-      request = nil
+      _request = nil
     end
   end
 end
