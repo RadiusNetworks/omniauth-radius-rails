@@ -1,4 +1,5 @@
 require "support/base_controller_double"
+require "support/using_cache"
 
 module Kracken
   class TokenAuthController < BaseControllerDouble
@@ -19,10 +20,52 @@ module Kracken
   end
 
   RSpec.describe Controllers::TokenAuthenticatable do
-    describe "authenticating via a token" do
+    describe "authenticating via a token", :using_cache do
+      shared_examples "the authorization request headers" do |token_helper|
+        let(:expected_token) { public_send token_helper }
+
+        specify "are munged to include a provided parameterized token" do
+          controller = TokenAuthController.new
+          controller.request.env = {
+            'HTTP_AUTHORIZATION' => 'Token token="header token"'
+          }
+          controller.params = { token: expected_token }
+
+          expect {
+            controller.authenticate_user_with_token!
+          }.to change {
+            controller.request.env
+          }.from(
+            'HTTP_AUTHORIZATION' => 'Token token="header token"'
+          ).to(
+            'HTTP_AUTHORIZATION' => "Token token=\"#{expected_token}\""
+          )
+        end
+
+        specify "are not modified when no parameterized token provided" do
+          controller = TokenAuthController.new
+          controller.request.env = {
+            'HTTP_AUTHORIZATION' => "Token token=\"#{expected_token}\""
+          }
+
+          expect {
+            controller.authenticate_user_with_token!
+          }.not_to change { controller.request.env }.from(
+            'HTTP_AUTHORIZATION' => "Token token=\"#{expected_token}\""
+          )
+        end
+      end
+
       context "on a cache hit" do
-        it "munges the request headers to support parameterized tokens"
-        it "leaves the request header unchange when with no parameterized token"
+        let(:cached_token) { "any token" }
+        let(:cache_key) { "auth/token/any token" }
+
+        before do
+          Rails.cache.write(cache_key, "auth info")
+        end
+
+        include_examples "the authorization request headers", :cached_token
+
         it "uses the exising cache to bypass the authentication process"
         it "returns the auth info"
         it "exposes the auth info via the `current_` helpers"
@@ -30,17 +73,34 @@ module Kracken
       end
 
       context "on a cache miss with an invalid token" do
-        it "munges the request headers to support parameterized tokens"
-        it "leaves the request header unchange when with no parameterized token"
+        let(:invalid_token) { "any token" }
+
+        before do
+          allow(Authenticator).to receive(:user_with_token).with(invalid_token)
+                                                           .and_return(nil)
+        end
+
+        include_examples "the authorization request headers", :invalid_token
+
         it "follows the token authentication process"
         it "returns nil"
         it "doesn't cache invalid tokens"
       end
 
       context "on a cache miss with a valid token" do
+        let(:a_user) {
+          instance_double(User, id: user_id, team_ids: some_team_ids)
+        }
+        let(:some_team_ids) { [:some, :team, :ids] }
+        let(:user_id) { :any_id }
+        let(:valid_token) { "any token" }
+
         before do
-          allow(Authenticator).to receive(:user_with_token)
+          allow(Authenticator).to receive(:user_with_token).with(valid_token)
+                                                           .and_return(a_user)
         end
+
+        include_examples "the authorization request headers", :valid_token
 
         it "follows the token authentication process"
         it "returns the auth info"
@@ -50,41 +110,7 @@ module Kracken
         it "sets the cache expiration to the environment setting `KRACKEN_TOKEN_TTL` when available"
         it "eager loads the current user"
 
-        it "munges the request headers to support parameterized tokens" do
-          controller = TokenAuthController.new
-          controller.request.env = {
-            'HTTP_AUTHORIZATION' => 'Token token="header token"'
-          }
-          controller.params = { token: "param token" }
-
-          expect {
-            controller.authenticate_user_with_token!
-          }.to change {
-            controller.request.env
-          }.from(
-            'HTTP_AUTHORIZATION' => 'Token token="header token"'
-          ).to(
-            'HTTP_AUTHORIZATION' => 'Token token="param token"'
-          )
-        end
-
-        it "leaves the request header unchange when with no parameterized token" do
-          controller = TokenAuthController.new
-          controller.request.env = {
-            'HTTP_AUTHORIZATION' => 'Token token="any token"'
-          }
-
-          expect {
-            controller.authenticate_user_with_token!
-          }.not_to change { controller.request.env }.from(
-            'HTTP_AUTHORIZATION' => 'Token token="any token"'
-          )
-        end
-
         it "authenticates the current user via the token" do
-          a_user = instance_double(User)
-          allow(Authenticator).to receive(:user_with_token).with("any token")
-                                                           .and_return(a_user)
           controller = TokenAuthController.new
           controller.request.env = {
             'HTTP_AUTHORIZATION' => 'Token token="any token"'
