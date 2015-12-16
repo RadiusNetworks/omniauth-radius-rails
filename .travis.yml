@@ -1,7 +1,8 @@
 language: ruby
-bundler_args: --jobs=3 --retry=3
+bundler_args: --binstubs --jobs=3 --retry=3
 cache: bundler
 sudo: false
+script: bin/rake
 rvm:
   - 2.1
   - 2.2
