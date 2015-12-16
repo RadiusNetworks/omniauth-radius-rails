@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 module Kracken
     RSpec.describe "Kracken OAuth Routes", type: :routing do
