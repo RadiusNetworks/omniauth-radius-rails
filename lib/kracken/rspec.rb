@@ -47,6 +47,7 @@ module Kracken
         Kracken::SpecHelper.current_user
       end
 
+      alias_method :__original_auth__, :authenticate_user_with_token!
       def authenticate_user_with_token!
         if current_user
           @_auth_info = {
@@ -54,7 +55,7 @@ module Kracken
             team_ids: current_user.team_ids,
           }
         else
-          super
+          __original_auth__
         end
       end
     end
