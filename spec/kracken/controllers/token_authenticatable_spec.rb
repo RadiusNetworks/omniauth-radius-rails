@@ -230,19 +230,6 @@ module Kracken
           a_controller.authenticate_user_with_token!
           expect(a_controller.current_user).to be a_user
         end
-
-        # TODO: Delete this test after implementation is complete
-        # This is only to ensure we maintain general backwards compatibility
-        it "authenticates the current user via the token" do
-          controller = TokenAuthController.new
-          controller.request.env = {
-            'HTTP_AUTHORIZATION' => 'Token token="any token"'
-          }
-
-          expect {
-            controller.authenticate_user_with_token!
-          }.to change { controller.current_user }.from(nil).to(a_user)
-        end
       end
     end
   end
