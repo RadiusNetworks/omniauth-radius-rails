@@ -13,8 +13,6 @@ module Kracken
         end
       end
 
-      attr_reader :current_user
-
       # NOTE: Monkey-patch until this is merged into the gem
       def request_http_token_authentication(realm = 'Application')
         headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
@@ -23,18 +21,47 @@ module Kracken
 
     private
 
+      CACHE_TTL_OPTS = {
+        expires_in: ENV.fetch("KRACKEN_TOKEN_TTL", 1.minute).to_i,
+        race_condition_ttl: 1.second,
+      }.freeze
+
       # `authenticate_or_request_with_http_token` is a nice Rails helper:
       # http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Token/ControllerMethods.html#method-i-authenticate_or_request_with_http_token
       def authenticate_user_with_token!
-        unless current_user
-          munge_header_auth_token!
+        munge_header_auth_token!
 
-          authenticate_or_request_with_http_token(realm) { |token, _options|
-            # Attempt to reduce namespace conflicts with controllers which may access
-            # an team instance for display.
-            @current_user = Authenticator.user_with_token(token)
+        authenticate_or_request_with_http_token(realm) { |token, _options|
+          # Attempt to reduce ivar namespace conflicts with controllers
+          @_auth_info = cache_valid_auth(token) {
+            if @current_user = Authenticator.user_with_token(token)
+              { id: @current_user.id, team_ids: @current_user.team_ids }
+            end
           }
-        end
+        }
+      end
+
+      def cache_valid_auth(token, &generate_cache)
+        cache_key = "auth/token/#{token}"
+        val = Rails.cache.read(cache_key)
+        val ||= store_valid_auth(cache_key, &generate_cache)
+        val.transform_values!(&:freeze).freeze if val
+      end
+
+      def current_auth_info
+        @_auth_info ||= {}
+      end
+
+      def current_team_ids
+        current_auth_info[:team_ids]
+      end
+
+      def current_user
+        @current_user ||= Kracken.config.user_class.find(current_auth_info[:id])
+      end
+
+      def current_user_id
+        current_auth_info[:id]
       end
 
       # Make it **explicit** that we are munging the `token` param with the
@@ -52,6 +79,12 @@ module Kracken
 
       def realm
         self.class.realm
+      end
+
+      def store_valid_auth(cache_key)
+        val = yield
+        Rails.cache.write(cache_key, val, CACHE_TTL_OPTS) if val
+        val
       end
     end
 

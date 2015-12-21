@@ -22,4 +22,10 @@ class User
   def uid
     @hash["uid"]
   end
+
+  def team_ids
+    @hash["info"] ||= {}
+    @hash["info"]["teams"] ||= []
+    @hash["info"]["teams"].map { |t| t["uid"] }
+  end
 end
