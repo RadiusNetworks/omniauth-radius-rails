@@ -46,6 +46,17 @@ module Kracken
       def current_user
         Kracken::SpecHelper.current_user
       end
+
+      def authenticate_user_with_token!
+        if current_user
+          @_auth_info = {
+            id: current_user.id,
+            team_ids: current_user.team_ids,
+          }
+        else
+          super
+        end
+      end
     end
   end
 end
