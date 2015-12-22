@@ -51,7 +51,7 @@ module Kracken
       def shallow_freeze(val)
         # `nil` is frozen in Ruby 2.2 but not in Ruby 2.1
         return val if val.frozen? || val.nil?
-        val.transform_values!(&:freeze).freeze
+        val.each { |_k, v| v.freeze }.freeze
       end
 
       def current_auth_info
