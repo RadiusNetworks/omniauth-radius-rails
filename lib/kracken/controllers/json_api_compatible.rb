@@ -1,5 +1,3 @@
-require 'kracken/controllers/json_api_compatible'
-
 module Kracken
   module Controllers
     module JsonApiCompatible

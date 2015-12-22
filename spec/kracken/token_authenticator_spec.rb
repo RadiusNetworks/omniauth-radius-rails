@@ -1,7 +1,7 @@
-require 'spec_helper'
+require 'rails_helper'
 
 module Kracken
-  describe TokenAuthenticator do
+  RSpec.describe TokenAuthenticator do
     let(:json){ Fixtures.auth_hash.to_json }
 
     def set_request(status, body=nil)

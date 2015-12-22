@@ -1,7 +1,7 @@
-require 'spec_helper'
+require 'rails_helper'
 
 module Kracken
-  describe Config do
+  RSpec.describe Config do
 
     subject(:config){ Kracken::Config.new }
 

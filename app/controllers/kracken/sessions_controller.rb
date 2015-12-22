@@ -8,7 +8,6 @@ module Kracken
 
     def create
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
-      current_user = @user
       session[:user_id] = @user.id
       session[:user_cache_key] = cookies[:_radius_user_cache_key]
       session[:token_expires_at] = Time.zone.at(auth_hash[:credentials][:expires_at])

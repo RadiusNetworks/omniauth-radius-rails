@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 
 module Kracken
@@ -8,7 +8,7 @@ module Kracken
       include Kracken::Controllers::Authenticatable
     end
 
-    describe Authenticatable do
+    RSpec.describe Authenticatable do
       subject(:controller){ ControllerDouble.new }
 
       before do

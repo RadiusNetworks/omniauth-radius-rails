@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 module Kracken
   RSpec.describe 'token authenticatable resource requests', type: :request do
