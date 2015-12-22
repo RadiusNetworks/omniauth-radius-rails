@@ -45,7 +45,13 @@ module Kracken
         cache_key = "auth/token/#{token}"
         val = Rails.cache.read(cache_key)
         val ||= store_valid_auth(cache_key, &generate_cache)
-        val.transform_values!(&:freeze).freeze if val
+        shallow_freeze(val)
+      end
+
+      def shallow_freeze(val)
+        # nil is always frozen
+        return val if val.frozen?
+        val.transform_values!(&:freeze).freeze
       end
 
       def current_auth_info
