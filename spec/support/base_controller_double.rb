@@ -1,10 +1,14 @@
 module Kracken
   class BaseControllerDouble
-    attr_accessor :session, :cookies
+    Request = Struct.new(:env)
+
+    attr_accessor :session, :cookies, :request, :params
 
     def initialize
       @session = {}
       @cookies = {}
+      @request = Request.new({})
+      @params = {}
     end
 
     def self.helper_method(*) ; end
