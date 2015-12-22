@@ -45,7 +45,13 @@ module Kracken
         cache_key = "auth/token/#{token}"
         val = Rails.cache.read(cache_key)
         val ||= store_valid_auth(cache_key, &generate_cache)
-        val.transform_values!(&:freeze).freeze if val
+        shallow_freeze(val)
+      end
+
+      def shallow_freeze(val)
+        # `nil` is frozen in Ruby 2.2 but not in Ruby 2.1
+        return val if val.frozen? || val.nil?
+        val.each { |_k, v| v.freeze }.freeze
       end
 
       def current_auth_info

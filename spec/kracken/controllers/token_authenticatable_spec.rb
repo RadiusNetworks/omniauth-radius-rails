@@ -1,3 +1,4 @@
+require "rails_helper"
 require "support/base_controller_double"
 require "support/using_cache"
 
@@ -83,6 +84,25 @@ module Kracken
         end
 
         it "returns the auth info" do
+          expect(a_controller.authenticate_user_with_token!).to eq(
+            id: :any_id,
+            team_ids: [:some, :team, :ids],
+          ).and be_frozen
+        end
+
+        it "handles already frozen auth hashes" do
+          # This seems to happen on the 2nd cache read - despite the hash being
+          # frozen when put into the cache the first cache read will not be
+          # frozen. However, subsequent reads seem to be froze - this may be
+          # Rails version dependent. Regardless, we need to be aware of it.
+
+          # Initial cache request
+          expect(a_controller.authenticate_user_with_token!).to eq(
+            id: :any_id,
+            team_ids: [:some, :team, :ids],
+          ).and be_frozen
+
+          # Secondary cache request
           expect(a_controller.authenticate_user_with_token!).to eq(
             id: :any_id,
             team_ids: [:some, :team, :ids],
