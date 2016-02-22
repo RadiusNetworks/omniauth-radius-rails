@@ -8,6 +8,7 @@ require "kracken/controllers/json_api_compatible"
 require "kracken/token_authenticator"
 require "kracken/credential_authenticator"
 require "kracken/authenticator"
+require "kracken/registration"
 
 module Kracken
   mattr_accessor :config
