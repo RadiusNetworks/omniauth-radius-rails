@@ -119,6 +119,18 @@ module Kracken
 
           before_action :munge_chained_param_ids!
           skip_before_action :verify_authenticity_token
+
+          if defined?(::ActiveRecord)
+            rescue_from ::ActiveRecord::RecordNotFound do |error|
+              # In order to use named captures we need to use an inline regex
+              # on the LHS.
+              #
+              # Source: http://rubular.com/r/NoQ4SZMav4
+              /Couldn't find( all)? (?<resource>\w+) with 'id'.?( \()?(?<ids>[,\s\w]+)\)?/ =~ error.message
+              resource = resource.underscore.pluralize
+              raise ResourceNotFound.new(resource, ids.strip)
+            end
+          end
         end
       end
 
