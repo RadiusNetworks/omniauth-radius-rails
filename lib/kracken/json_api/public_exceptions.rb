@@ -7,9 +7,16 @@ module Kracken
       end
 
       def call(env)
-        app.call(env)
+        if JsonApi.has_path?(JsonApi::Request.new(env))
+          capture_error(env)
+        else
+          @app.call(env)
+        end
+      end
+
+      def capture_error(env)
+        @app.call(env)
       rescue Exception => exception
-        raise exception unless JsonApi.has_path?(JsonApi::Request.new(env))
         render_json_error(ExceptionWrapper.new(env, exception))
       end
 
