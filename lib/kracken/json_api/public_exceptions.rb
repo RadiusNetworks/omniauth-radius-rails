@@ -14,8 +14,20 @@ module Kracken
         end
       end
 
+      # Use similar logic to how `ActionDispatch::DebugExceptions` captures
+      # routing errors.
+      # https://github.com/rails/rails/blob/v4.2.6/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb
       def capture_error(env)
-        @app.call(env)
+        _, headers, body = response = @app.call(env)
+
+        if headers['X-Cascade'] == 'pass'
+          body.close if body.respond_to?(:close)
+          raise ActionController::RoutingError,
+                "No route matches [#{env['REQUEST_METHOD']}] " \
+                "#{env['PATH_INFO'].inspect}"
+        end
+
+        response
       rescue Exception => exception
         render_json_error(ExceptionWrapper.new(env, exception))
       end
