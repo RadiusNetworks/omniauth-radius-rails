@@ -1,7 +1,37 @@
 module Kracken
   module JsonApi
+    # Error logging methods used by `ActionDispatch::DebugExceptions`
+    # https://github.com/rails/rails/blob/v4.2.6/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb
+    module ErrorLogging
+      def log_error(env, wrapper)
+        logger = logger(env)
+        return unless logger
+
+        exception = wrapper.exception
+
+        trace = wrapper.application_trace
+        trace = wrapper.framework_trace if trace.empty?
+
+        ActiveSupport::Deprecation.silence do
+          message = "\n#{exception.class} (#{exception.message}):\n"
+          message << exception.annoted_source_code.to_s if exception.respond_to?(:annoted_source_code)
+          message << "  " << trace.join("\n  ")
+          logger.fatal("#{message}\n\n")
+        end
+      end
+
+      def logger(env)
+        env['action_dispatch.logger'] || stderr_logger
+      end
+
+      def stderr_logger
+        @stderr_logger ||= ActiveSupport::Logger.new($stderr)
+      end
+    end
+
     class PublicExceptions
-      attr_reader :app
+      include ErrorLogging
+
       def initialize(app)
         @app = app
       end
@@ -29,7 +59,9 @@ module Kracken
 
         response
       rescue Exception => exception
-        render_json_error(ExceptionWrapper.new(env, exception))
+        wrapper = ExceptionWrapper.new(env, exception)
+        log_error(env, wrapper)
+        render_json_error(wrapper)
       end
 
       if Rails.env.production?
