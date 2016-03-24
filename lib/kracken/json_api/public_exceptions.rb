@@ -27,8 +27,8 @@ module Kracken
 
       def show_error_details?(wrapper)
         wrapper.is_details_exception? ||
-          ( Rails.application.config.consider_all_requests_local &&
-            wrapper.status_code == 500)
+          Rails.application.config.consider_all_requests_local ||
+          (Rails.env.test? && wrapper.status_code == 500)
       end
 
       def error_as_json(wrapper)
