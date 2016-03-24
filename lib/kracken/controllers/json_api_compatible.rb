@@ -2,7 +2,6 @@ module Kracken
   module Controllers
     module JsonApiCompatible
 
-
       module MungeAndMirror
         # Wraps the data root in an Array, if it is not already an Array. This
         # will not wrap the value if the resource root is not present.
@@ -75,15 +74,6 @@ module Kracken
         end
       end
 
-      def self.included(base)
-        base.instance_exec do
-          extend Macros
-
-          before_action :munge_chained_param_ids!
-          skip_before_action :verify_authenticity_token
-        end
-      end
-
       module DataIntegrity
         # Scan each item in the data root and enforce it has an id set.
         def enforce_resource_ids!
@@ -123,7 +113,17 @@ module Kracken
       end
       include VirtualAttributes
 
+      def self.included(base)
+        base.instance_exec do
+          extend Macros
+
+          before_action :munge_chained_param_ids!
+          skip_before_action :verify_authenticity_token
+        end
+      end
+
     # Common Actions Necessary in JSON API controllers
+    module_function
 
       # Wrap a block in an Active Record transaction
       #
