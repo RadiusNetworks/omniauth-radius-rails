@@ -17,7 +17,7 @@ module Kracken
       @missing_ids = Array(missing_ids)
       @resource    = resource
       super(
-        "Couldn't find #{resource} with id(s): #{missing_ids.join(', ')}"
+        "Couldn't find #{@resource} with id(s): #{@missing_ids.join(', ')}"
       )
     end
   end

@@ -1,16 +1,67 @@
 module Kracken
   module JsonApi
+    # Error logging methods used by `ActionDispatch::DebugExceptions`
+    # https://github.com/rails/rails/blob/v4.2.6/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb
+    module ErrorLogging
+      def log_error(env, wrapper)
+        logger = logger(env)
+        return unless logger
+
+        exception = wrapper.exception
+
+        trace = wrapper.application_trace
+        trace = wrapper.framework_trace if trace.empty?
+
+        ActiveSupport::Deprecation.silence do
+          message = "\n#{exception.class} (#{exception.message}):\n"
+          message << exception.annoted_source_code.to_s if exception.respond_to?(:annoted_source_code)
+          message << "  " << trace.join("\n  ")
+          logger.fatal("#{message}\n\n")
+        end
+      end
+
+      def logger(env)
+        env['action_dispatch.logger'] || stderr_logger
+      end
+
+      def stderr_logger
+        @stderr_logger ||= ActiveSupport::Logger.new($stderr)
+      end
+    end
+
     class PublicExceptions
-      attr_reader :app
+      include ErrorLogging
+
       def initialize(app)
         @app = app
       end
 
       def call(env)
-        app.call(env)
+        if JsonApi.has_path?(JsonApi::Request.new(env))
+          capture_error(env)
+        else
+          @app.call(env)
+        end
+      end
+
+      # Use similar logic to how `ActionDispatch::DebugExceptions` captures
+      # routing errors.
+      # https://github.com/rails/rails/blob/v4.2.6/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb
+      def capture_error(env)
+        _, headers, body = response = @app.call(env)
+
+        if headers['X-Cascade'] == 'pass'
+          body.close if body.respond_to?(:close)
+          raise ActionController::RoutingError,
+                "No route matches [#{env['REQUEST_METHOD']}] " \
+                "#{env['PATH_INFO'].inspect}"
+        end
+
+        response
       rescue Exception => exception
-        raise exception unless JsonApi.has_path?(JsonApi::Request.new(env))
-        render_json_error(ExceptionWrapper.new(env, exception))
+        wrapper = ExceptionWrapper.new(env, exception)
+        log_error(env, wrapper)
+        render_json_error(wrapper)
       end
 
       if Rails.env.production?
@@ -27,8 +78,8 @@ module Kracken
 
       def show_error_details?(wrapper)
         wrapper.is_details_exception? ||
-          ( Rails.application.config.consider_all_requests_local &&
-            wrapper.status_code == 500)
+          Rails.application.config.consider_all_requests_local ||
+          (Rails.env.test? && wrapper.status_code == 500)
       end
 
       def error_as_json(wrapper)
