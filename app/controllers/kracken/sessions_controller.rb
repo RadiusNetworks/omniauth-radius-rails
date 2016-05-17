@@ -1,7 +1,7 @@
 module Kracken
   class SessionsController < ApplicationController
-    skip_before_filter :authenticate_user!, except: [:index]
-    skip_before_filter :handle_user_cache_cookie!, except: [:index]
+    skip_before_filter :authenticate_user!, except: [:index], raise: false
+    skip_before_filter :handle_user_cache_cookie!, except: [:index], raise: false
 
     def index
     end
