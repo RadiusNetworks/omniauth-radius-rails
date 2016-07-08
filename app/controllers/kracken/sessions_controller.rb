@@ -1,10 +1,5 @@
 module Kracken
-  class SessionsController < ApplicationController
-    skip_before_filter :authenticate_user!, except: [:index]
-    skip_before_filter :handle_user_cache_cookie!, except: [:index]
-
-    def index
-    end
+  class SessionsController < ActionController::Base
 
     def create
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
