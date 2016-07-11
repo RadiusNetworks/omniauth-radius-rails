@@ -14,7 +14,7 @@ module Kracken
       end
 
       # NOTE: Monkey-patch until this is merged into the gem
-      def request_http_token_authentication(realm = 'Application')
+      def request_http_token_authentication(realm = 'Application', message = nil)
         headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
         raise TokenUnauthorized, "Invalid Credentials"
       end
