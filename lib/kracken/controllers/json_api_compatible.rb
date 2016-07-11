@@ -80,7 +80,6 @@ module Kracken
           extend Macros
 
           before_action :munge_chained_param_ids!
-          skip_before_action :verify_authenticity_token
         end
       end
 
