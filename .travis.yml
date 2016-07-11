@@ -4,4 +4,4 @@ cache: bundler
 sudo: false
 script: bin/rake
 rvm:
-  - 2.3
+  - 2.3.1
