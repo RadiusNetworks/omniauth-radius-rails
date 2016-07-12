@@ -126,7 +126,7 @@ module Kracken
           extend Macros
 
           before_action :munge_chained_param_ids!
-          skip_before_action :verify_authenticity_token
+          skip_before_action :verify_authenticity_token, raise: false
 
           if defined?(::ActiveRecord)
             rescue_from ::ActiveRecord::RecordNotFound do |error|
