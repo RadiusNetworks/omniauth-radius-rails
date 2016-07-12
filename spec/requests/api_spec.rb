@@ -18,7 +18,7 @@ module Kracken
         stub_request(:get, "https://account.radiusnetworks.com/auth/radius/user.json?oauth_token=123")
           .to_return(status: 200, body: json)
 
-        get api_index_path, nil, headers_with_token("123")
+        get api_index_path, params: {}, headers: headers_with_token("123")
 
         expect(response.status).to be 200
       end
