@@ -2,7 +2,6 @@ module Kracken
   module Controllers
     module JsonApiCompatible
 
-
       module MungeAndMirror
         # Wraps the data root in an Array, if it is not already an Array. This
         # will not wrap the value if the resource root is not present.
@@ -122,7 +121,29 @@ module Kracken
       end
       include VirtualAttributes
 
+      def self.included(base)
+        base.instance_exec do
+          extend Macros
+
+          before_action :munge_chained_param_ids!
+          skip_before_action :verify_authenticity_token
+
+          if defined?(::ActiveRecord)
+            rescue_from ::ActiveRecord::RecordNotFound do |error|
+              # In order to use named captures we need to use an inline regex
+              # on the LHS.
+              #
+              # Source: http://rubular.com/r/NoQ4SZMav4
+              /Couldn't find( all)? (?<resource>\w+) with 'id'.?( \()?(?<ids>[,\s\w]+)\)?/ =~ error.message
+              resource = resource.underscore.pluralize
+              raise ResourceNotFound.new(resource, ids.strip)
+            end
+          end
+        end
+      end
+
     # Common Actions Necessary in JSON API controllers
+    module_function
 
       # Wrap a block in an Active Record transaction
       #

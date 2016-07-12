@@ -9,6 +9,7 @@ require "kracken/token_authenticator"
 require "kracken/credential_authenticator"
 require "kracken/authenticator"
 require "kracken/registration"
+require "kracken/railtie" if defined?(Rails)
 
 module Kracken
   mattr_accessor :config
