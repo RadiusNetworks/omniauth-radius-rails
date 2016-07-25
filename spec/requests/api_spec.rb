@@ -18,7 +18,12 @@ module Kracken
         stub_request(:get, "https://account.radiusnetworks.com/auth/radius/user.json?oauth_token=123")
           .to_return(status: 200, body: json)
 
-        get api_index_path, nil, headers_with_token("123")
+        # Temporary work around while we support versions of Rails before 4
+        if Rails::VERSION::MAJOR >= 5
+          get api_index_path, params: {}, headers: headers_with_token("123")
+        else
+          get api_index_path, {}, headers_with_token("123")
+        end
 
         expect(response.status).to be 200
       end

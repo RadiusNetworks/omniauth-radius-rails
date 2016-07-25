@@ -15,10 +15,18 @@ module Kracken
 
       # Customize the `authenticate_or_request_with_http_token` process:
       # http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Token/ControllerMethods.html#method-i-request_http_token_authentication
-      def request_http_token_authentication(realm = 'Application')
-        # Modified from https://github.com/rails/rails/blob/60d0aec7/actionpack/lib/action_controller/metal/http_authentication.rb#L490-L499
-        headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
-        raise TokenUnauthorized, "Invalid Credentials"
+      #
+      # Modified from https://github.com/rails/rails/blob/60d0aec7/actionpack/lib/action_controller/metal/http_authentication.rb#L490-L499
+      if Rails::VERSION::MAJOR >= 5
+        def request_http_token_authentication(realm = 'Application', message = nil)
+          headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
+          raise TokenUnauthorized, "Invalid Credentials"
+        end
+      else
+        def request_http_token_authentication(realm = 'Application')
+          headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
+          raise TokenUnauthorized, "Invalid Credentials"
+        end
       end
 
     private
