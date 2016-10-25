@@ -31,6 +31,7 @@ module OmniAuth
             uid
             confirmed
             teams
+            linked_accounts
             admin
             subscription_level
           }
