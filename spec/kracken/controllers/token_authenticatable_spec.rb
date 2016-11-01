@@ -125,22 +125,13 @@ module Kracken
         end
 
         it "lazy loads the current user" do
-          begin
-            # Ensure we cannot lookup a user - doing so would raise an error
-            org_user_class = Kracken.config.user_class
-            user_class = double("AnyUserClass")
-            Kracken.config.user_class = user_class
+          # Action under test
+          a_controller.authenticate_user_with_token!
 
-            # Action under test
-            a_controller.authenticate_user_with_token!
+          # Make sure we perform the lookup as expected now
+          expect(::User).to receive(:find).with(:any_id).and_return(:user)
 
-            # Make sure we perform the lookup as expected now
-            expect(user_class).to receive(:find).with(:any_id).and_return(:user)
-
-            expect(a_controller.current_user).to be :user
-          ensure
-            Kracken.config.user_class = org_user_class
-          end
+          expect(a_controller.current_user).to be :user
         end
       end
 
