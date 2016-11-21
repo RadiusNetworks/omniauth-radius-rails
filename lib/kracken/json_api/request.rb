@@ -21,7 +21,6 @@ module Kracken
         env['json_api.original_path'] ||= (
           env["action_dispatch.original_path"] || env["PATH_INFO"]
         )
-        Pathname(env['json_api.original_path'])
       end
 
       # File actionpack/lib/action_dispatch/http/mime_negotiation.rb
