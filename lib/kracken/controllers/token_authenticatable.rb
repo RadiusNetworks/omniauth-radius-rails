@@ -33,9 +33,9 @@ module Kracken
 
       TOKEN_AUTH_CACHE_PREFIX = "auth/token/"
 
-      def cache_valid_auth(token, &generate_cache)
+      def cache_valid_auth(token, force: false, &generate_cache)
         cache_key = TOKEN_AUTH_CACHE_PREFIX + token
-        val = Rails.cache.read(cache_key)
+        val = Rails.cache.read(cache_key) unless force
         val ||= store_valid_auth(cache_key, &generate_cache)
         shallow_freeze(val)
       end

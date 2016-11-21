@@ -14,6 +14,12 @@ module Kracken
       def sign_in(user = nil)
         Kracken::SpecHelper.current_user = user
       end
+
+      def token_authorize(user, token:)
+        Kracken::Controllers::TokenAuthenticatable::cache_valid_auth(token, force: true) do
+          { id: user.id, team_ids: user.team_ids }
+        end
+      end
     end
 
     module Controller
