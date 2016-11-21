@@ -40,6 +40,10 @@ module Kracken
         shallow_freeze(val)
       end
 
+      def clear_auth_cache
+        Rails.cache.delete_matched TOKEN_AUTH_CACHE_PREFIX + "*"
+      end
+
       def shallow_freeze(val)
         # `nil` is frozen in Ruby 2.2 but not in Ruby 2.1
         return val if val.frozen? || val.nil?
