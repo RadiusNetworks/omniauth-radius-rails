@@ -49,8 +49,10 @@ module Kracken
       end
     end
     module TokenAuthenticatable
+      alias_method :__original_user__, :current_user
       def current_user
-        Kracken::SpecHelper.current_user
+        Kracken::SpecHelper.current_user or
+          (current_user_id && __original_user__)
       end
 
       alias_method :__original_auth__, :authenticate_user_with_token!
