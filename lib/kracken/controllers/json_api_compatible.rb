@@ -50,7 +50,7 @@ module Kracken
         end
 
         def verify_scoped_resource(resource, options = {})
-          name = "verify_scoped_#{resource}"
+          name = "verify_scoped_#{resource}".to_sym
           relation = options.extract!(:as).fetch(:as, resource).to_s.pluralize
           scope = options.extract!(:scope).fetch(:scope, :current_user)
           resource_id = (resource_type == resource.to_sym) ? :id : "#{resource}_id"
