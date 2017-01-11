@@ -74,14 +74,6 @@ module Kracken
         end
       end
 
-      def self.included(base)
-        base.instance_exec do
-          extend Macros
-
-          before_action :munge_chained_param_ids!
-        end
-      end
-
       module DataIntegrity
         # Scan each item in the data root and enforce it has an id set.
         def enforce_resource_ids!
