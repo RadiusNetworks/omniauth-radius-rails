@@ -17,8 +17,23 @@ module Kracken
         end
       end
 
-      def is_details_exception?
-        @@rescue_with_details_responses.has_key?(exception.class.name)
+      # Temporary work around while we support versions of Rails before 4
+      if Rails::VERSION::MAJOR < 5
+        def is_details_exception?
+          @@rescue_with_details_responses.has_key?(exception.class.name)
+        end
+      else
+        attr_reader :raised_exception
+
+        def initialize(backtrace_cleaner, exception)
+          super
+          @raised_exception = exception
+        end
+
+        def is_details_exception?
+          @@rescue_with_details_responses.has_key?(raised_exception.class.name) ||
+            @@rescue_with_details_responses.has_key?(exception.class.name)
+        end
       end
     end
   end
