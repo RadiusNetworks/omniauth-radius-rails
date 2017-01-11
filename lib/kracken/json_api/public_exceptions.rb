@@ -37,7 +37,7 @@ module Kracken
       end
 
       def call(env)
-        if JsonApi.has_path?(JsonApi::Request.new(env))
+        if JsonApi.has_path?(ActionDispatch::Request.new(env))
           capture_error(env)
         else
           @app.call(env)

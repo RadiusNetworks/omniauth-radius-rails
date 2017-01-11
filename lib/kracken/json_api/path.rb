@@ -10,7 +10,7 @@ module Kracken
       end
 
       def matches?(request)
-        request.supports_json_format? && path_matches?(request.path)
+        path_matches?(request.original_fullpath)
       end
 
     private
