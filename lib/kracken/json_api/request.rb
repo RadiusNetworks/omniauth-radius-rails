@@ -48,9 +48,9 @@ module Kracken
             accepts
           # original_format would be set by the ABOVE two conditions
           elsif xhr?
-            [Mime::JS]
+            Mime[:js]
           else
-            [Mime::JSON]
+            Mime[:json]
           end
         end
       end
