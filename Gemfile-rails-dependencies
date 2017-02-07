@@ -4,7 +4,23 @@ version = ENV.fetch('RAILS_VERSION') {
 }
 
 if version && !version.empty?
-  gem "rails", version
+  if version.end_with?("stable")
+    gem_list = %w[
+      rails
+      railties
+      actionmailer
+      actionpack
+      activerecord
+      activesupport
+      activejob
+      actionview
+    ]
+    gem_list.each do |rails_gem|
+      gem rails_gem, git: "https://github.com/rails/rails.git", branch: version
+    end
+  else
+    gem "rails", version
+  end
 elsif RUBY_VERSION.to_f < 2.4
   gem "rails", "~> 4.2.0"
 else
