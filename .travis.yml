@@ -4,4 +4,13 @@ cache: bundler
 sudo: false
 script: bin/rake
 rvm:
-  - 2.3.1
+  - 2.3.3
+  - 2.4.0
+env:
+  - RAILS_VERSION='~> 5.0.0'
+  - RAILS_VERSION='~> 4.2.0'
+matrix:
+  include:
+    - rvm: 2.2.3
+      env: RAILS_VERSION="4.2.5"
+  fast_finish: true
