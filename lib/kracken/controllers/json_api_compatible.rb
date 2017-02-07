@@ -50,7 +50,7 @@ module Kracken
         end
 
         def verify_scoped_resource(resource, options = {})
-          name = "verify_scoped_#{resource}"
+          name = "verify_scoped_#{resource}".to_sym
           relation = options.extract!(:as).fetch(:as, resource).to_s.pluralize
           scope = options.extract!(:scope).fetch(:scope, :current_user)
           resource_id = (resource_type == resource.to_sym) ? :id : "#{resource}_id"
@@ -74,14 +74,6 @@ module Kracken
         end
       end
 
-      def self.included(base)
-        base.instance_exec do
-          extend Macros
-
-          before_action :munge_chained_param_ids!
-        end
-      end
-
       module DataIntegrity
         # Scan each item in the data root and enforce it has an id set.
         def enforce_resource_ids!
@@ -102,6 +94,18 @@ module Kracken
                   "Single beacon object provided but multiple resources requested"
           end
         end
+
+        # Negotiate the mime type for the request format
+        #
+        # This will modify the request object setting the format.
+        def negotiate_mime
+          return if request.negotiate_mime(ALLOWED_MEDIA_TYPES)
+          raise ::ActionController::UnknownFormat
+        end
+
+      private
+
+        ALLOWED_MEDIA_TYPES = [Mime[:json]].freeze
       end
       include DataIntegrity
 
@@ -125,6 +129,7 @@ module Kracken
         base.instance_exec do
           extend Macros
 
+          before_action :negotiate_mime
           before_action :munge_chained_param_ids!
           skip_before_action :verify_authenticity_token, raise: false
 

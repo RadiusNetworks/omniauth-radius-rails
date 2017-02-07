@@ -14,6 +14,12 @@ module Kracken
       def sign_in(user = nil)
         Kracken::SpecHelper.current_user = user
       end
+
+      def token_authorize(user, token:)
+        Kracken::Controllers::TokenAuthenticatable::cache_valid_auth(token, force: true) do
+          { id: user.id, team_ids: user.team_ids }
+        end
+      end
     end
 
     module Controller
@@ -43,8 +49,10 @@ module Kracken
       end
     end
     module TokenAuthenticatable
+      alias_method :__original_user__, :current_user
       def current_user
-        Kracken::SpecHelper.current_user
+        Kracken::SpecHelper.current_user or
+          (current_user_id && __original_user__)
       end
 
       alias_method :__original_auth__, :authenticate_user_with_token!
@@ -68,6 +76,10 @@ if defined? RSpec
     c.include Kracken::SpecHelper::Request, type: :feature
     c.include Kracken::SpecHelper::Request, type: :kracken
     c.include Kracken::SpecHelper::Request, type: :request
+
+    c.before do
+      Kracken::Controllers::TokenAuthenticatable.clear_auth_cache
+    end
 
     c.before(type: :kracken) do
         Kracken::SpecHelper.current_user = nil

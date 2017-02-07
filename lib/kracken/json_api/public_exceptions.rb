@@ -37,7 +37,7 @@ module Kracken
       end
 
       def call(env)
-        if JsonApi.has_path?(JsonApi::Request.new(env))
+        if JsonApi.has_path?(ActionDispatch::Request.new(env))
           capture_error(env)
         else
           @app.call(env)
@@ -59,9 +59,21 @@ module Kracken
 
         response
       rescue Exception => exception
-        wrapper = ExceptionWrapper.new(env, exception)
+        wrapper = exception_wrapper(env, exception)
         log_error(env, wrapper)
         render_json_error(wrapper)
+      end
+
+      if Rails::VERSION::MAJOR < 5
+        def exception_wrapper(env, exception)
+          ExceptionWrapper.new(env, exception)
+        end
+      else
+        def exception_wrapper(env, exception)
+          request = ActionDispatch::Request.new(env)
+          backtrace_cleaner = request.get_header('action_dispatch.backtrace_cleaner')
+          ExceptionWrapper.new(backtrace_cleaner, exception)
+        end
       end
 
       if Rails.env.production?

@@ -29,6 +29,33 @@ module Kracken
         end
       end
 
+    module_function
+
+      TOKEN_AUTH_CACHE_PREFIX = "auth/token/"
+
+      def cache_valid_auth(token, force: false, &generate_cache)
+        cache_key = TOKEN_AUTH_CACHE_PREFIX + token
+        val = Rails.cache.read(cache_key) unless force
+        val ||= store_valid_auth(cache_key, &generate_cache)
+        shallow_freeze(val)
+      end
+
+      def clear_auth_cache
+        Rails.cache.delete_matched TOKEN_AUTH_CACHE_PREFIX + "*"
+      end
+
+      def shallow_freeze(val)
+        # `nil` is frozen in Ruby 2.2 but not in Ruby 2.1
+        return val if val.frozen? || val.nil?
+        val.each { |_k, v| v.freeze }.freeze
+      end
+
+      def store_valid_auth(cache_key)
+        val = yield
+        Rails.cache.write(cache_key, val, CACHE_TTL_OPTS) if val
+        val
+      end
+
     private
 
       CACHE_TTL_OPTS = {
@@ -49,19 +76,6 @@ module Kracken
             end
           }
         }
-      end
-
-      def cache_valid_auth(token, &generate_cache)
-        cache_key = "auth/token/#{token}"
-        val = Rails.cache.read(cache_key)
-        val ||= store_valid_auth(cache_key, &generate_cache)
-        shallow_freeze(val)
-      end
-
-      def shallow_freeze(val)
-        # `nil` is frozen in Ruby 2.2 but not in Ruby 2.1
-        return val if val.frozen? || val.nil?
-        val.each { |_k, v| v.freeze }.freeze
       end
 
       def current_auth_info
@@ -95,12 +109,6 @@ module Kracken
 
       def realm
         self.class.realm
-      end
-
-      def store_valid_auth(cache_key)
-        val = yield
-        Rails.cache.write(cache_key, val, CACHE_TTL_OPTS) if val
-        val
       end
     end
 

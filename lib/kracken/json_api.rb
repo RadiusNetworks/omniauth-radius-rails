@@ -1,7 +1,6 @@
 require_relative 'json_api/exception_wrapper'
 require_relative 'json_api/path'
 require_relative 'json_api/public_exceptions'
-require_relative 'json_api/request'
 require_relative 'json_api/routing_mapper'
 
 module Kracken
