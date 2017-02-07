@@ -109,7 +109,7 @@ module Kracken
         case status
         when Symbol
           code = Rack::Utils::SYMBOL_TO_STATUS_CODE[status]
-        when Fixnum
+        when Integer
           code = status
         when String
           code = status.to_i
