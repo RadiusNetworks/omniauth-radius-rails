@@ -1,0 +1,28 @@
+version_file = File.expand_path("../.rails-version", __FILE__)
+version = ENV.fetch('RAILS_VERSION') {
+  File.read(version_file).chomp if File.exist?(version_file)
+}
+
+if version && !version.empty?
+  if version.end_with?("stable")
+    gem_list = %w[
+      rails
+      railties
+      actionmailer
+      actionpack
+      activerecord
+      activesupport
+      activejob
+      actionview
+    ]
+    gem_list.each do |rails_gem|
+      gem rails_gem, git: "https://github.com/rails/rails.git", branch: version
+    end
+  else
+    gem "rails", version
+  end
+elsif RUBY_VERSION.to_f < 2.4
+  gem "rails", "~> 4.2.0"
+else
+  gem "rails", "~> 5.0"
+end
