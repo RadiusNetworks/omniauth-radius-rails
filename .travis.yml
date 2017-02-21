@@ -8,21 +8,13 @@ rvm:
   - 2.4.0
 env:
   - RAILS_VERSION='~> 5.0.0'
-  - RAILS_VERSION='~> 4.2.0'
+  - RAILS_VERSION='~> 4.2.8'
+  - RAILS_VERSION='4-2-stable'
+  - RAILS_VERSION='5-0-stable'
 matrix:
   include:
     - rvm: 2.2.3
       env: RAILS_VERSION="4.2.5"
-    # Rails doesn't officially support Ruby 2.4 yet (so also test latest stable)
-    - rvm: 2.4.0
-      env: RAILS_VERSION='4-2-stable'
-  allow_failures:
-    # Rails doesn't officially support Ruby 2.4 yet (so also test latest stable)
-    - rvm: 2.4.0
-      env: RAILS_VERSION='~> 4.2.0'
-    - rvm: 2.4.0
-      env: RAILS_VERSION='4-2-stable'
-    # Rails doesn't officially support Ruby 2.4 yet (multiple fixes in pipeline)
-    - rvm: 2.4.0
-      env: RAILS_VERSION='~> 4.2.0'
+    - rvm: 2.3.3
+      env: RAILS_VERSION='4.2.7.1'
   fast_finish: true
