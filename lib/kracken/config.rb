@@ -1,7 +1,7 @@
 module Kracken
   class Config
-    attr_accessor :app_id, :app_secret
-    attr_writer :provider_url, :user_class
+    attr_accessor :app_id, :app_secret, :user_class
+    attr_writer :provider_url
 
     def initialize
       @user_class = nil
@@ -12,7 +12,7 @@ module Kracken
     end
 
     def user_class
-      @user_class || ::User
+      ::User
     end
   end
 end
