@@ -80,18 +80,7 @@ if defined? RSpec
 
     c.before do
       Kracken::Controllers::TokenAuthenticatable.clear_auth_cache
-    end
-
-    c.before(type: :kracken) do
-        Kracken::SpecHelper.current_user = nil
-    end
-
-    c.before(type: :controller) do
-        Kracken::SpecHelper.current_user = nil
-    end
-
-    c.before(type: :request) do
-        Kracken::SpecHelper.current_user = nil
+      Kracken::SpecHelper.current_user = nil
     end
   end
 end
