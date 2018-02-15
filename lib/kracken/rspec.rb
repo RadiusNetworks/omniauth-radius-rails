@@ -74,6 +74,7 @@ if defined? RSpec
   RSpec.configure do |c|
     c.include Kracken::SpecHelper::Controller, type: :controller
     c.include Kracken::SpecHelper::Request, type: :feature
+    c.include Kracken::SpecHelper::Request, type: :system
     c.include Kracken::SpecHelper::Request, type: :kracken
     c.include Kracken::SpecHelper::Request, type: :request
 
