@@ -74,23 +74,13 @@ if defined? RSpec
   RSpec.configure do |c|
     c.include Kracken::SpecHelper::Controller, type: :controller
     c.include Kracken::SpecHelper::Request, type: :feature
+    c.include Kracken::SpecHelper::Request, type: :system
     c.include Kracken::SpecHelper::Request, type: :kracken
     c.include Kracken::SpecHelper::Request, type: :request
 
     c.before do
       Kracken::Controllers::TokenAuthenticatable.clear_auth_cache
-    end
-
-    c.before(type: :kracken) do
-        Kracken::SpecHelper.current_user = nil
-    end
-
-    c.before(type: :controller) do
-        Kracken::SpecHelper.current_user = nil
-    end
-
-    c.before(type: :request) do
-        Kracken::SpecHelper.current_user = nil
+      Kracken::SpecHelper.current_user = nil
     end
   end
 end
