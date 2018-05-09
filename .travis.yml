@@ -6,11 +6,14 @@ script: bin/rake
 rvm:
   - 2.3.3
   - 2.4.0
+  - 2.5.0
 env:
+  - RAILS_VERSION='~> 5.1.0'
   - RAILS_VERSION='~> 5.0.0'
   - RAILS_VERSION='~> 4.2.8'
   - RAILS_VERSION='4-2-stable'
   - RAILS_VERSION='5-0-stable'
+  - RAILS_VERSION='5-1-stable'
 matrix:
   include:
     - rvm: 2.2.3
