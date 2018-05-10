@@ -34,7 +34,7 @@ module Kracken
       # for the user, set it to nil, fetch from cache and only query if there
       # was a cache-hit (thus user is still nil).
       user = nil
-      user_id = Authenticator.cache.fetch("auth/#{token}/#{auth.etag}") {
+      user_id = Authenticator.cache.fetch("#{token}/#{auth.etag}") {
         user = self.new(auth.body).to_app_user
         user.id
       }

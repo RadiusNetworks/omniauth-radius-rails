@@ -36,22 +36,19 @@ module Kracken
 
     module_function
 
-      TOKEN_AUTH_CACHE_PREFIX = "auth/token/"
-
       def cache_valid_auth(token, force: false, &generate_cache)
-        cache_key = TOKEN_AUTH_CACHE_PREFIX + token
+        cache_key = token
         val = TokenAuthenticatable.cache.read(cache_key) unless force
         val ||= store_valid_auth(cache_key, &generate_cache)
         shallow_freeze(val)
       end
 
       def clear_auth_cache
-        TokenAuthenticatable.cache.delete_matched TOKEN_AUTH_CACHE_PREFIX + "*"
+        TokenAuthenticatable.cache.clear
       end
 
       def shallow_freeze(val)
-        # `nil` is frozen in Ruby 2.2 but not in Ruby 2.1
-        return val if val.frozen? || val.nil?
+        return val if val.frozen?
         val.each { |_k, v| v.freeze }.freeze
       end
 

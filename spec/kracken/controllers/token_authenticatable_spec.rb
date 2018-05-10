@@ -65,7 +65,7 @@ module Kracken
           }
         }
         let(:cached_token) { "any token" }
-        let(:cache_key) { "auth/token/any token" }
+        let(:cache_key) { "any token" }
 
         before do
           a_controller.request.env = {
@@ -163,7 +163,7 @@ module Kracken
           expect {
             a_controller.authenticate_user_with_token!
           }.not_to change {
-            Controllers::TokenAuthenticatable.cache.exist?("auth/token/#{invalid_token}")
+            Controllers::TokenAuthenticatable.cache.exist?("#{invalid_token}")
           }.from false
         end
       end
@@ -222,7 +222,7 @@ module Kracken
           expect {
             a_controller.authenticate_user_with_token!
           }.to change {
-            Controllers::TokenAuthenticatable.cache.read("auth/token/any token")
+            Controllers::TokenAuthenticatable.cache.read("any token")
           }.from(nil).to(
             id: :any_id,
             team_ids: [:some, :team, :ids],
@@ -231,7 +231,7 @@ module Kracken
 
         it "sets the cache expiration to one minute by default" do
           expect(Controllers::TokenAuthenticatable.cache).to receive(:write).with(
-            "auth/token/any token",
+            "any token",
             anything,
             include(expires_in: 1.minute),
           )
