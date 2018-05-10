@@ -1,7 +1,10 @@
 module Kracken
   class Config
-    attr_accessor :app_id, :app_secret, :user_class
+    attr_accessor :app_id, :app_secret
     attr_writer :provider_url
+
+    # @deprecated the associated reader returns static `::User`
+    attr_writer :user_class
 
     def initialize
       @user_class = nil
