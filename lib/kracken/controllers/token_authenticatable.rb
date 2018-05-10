@@ -1,6 +1,11 @@
 module Kracken
   module Controllers
     module TokenAuthenticatable
+      # @private
+      def self.cache
+        @cache
+      end
+
       def self.included(base)
         base.define_singleton_method(:realm) do |realm = nil|
           realm ||= (superclass.try(:realm) || 'Application')
@@ -35,13 +40,13 @@ module Kracken
 
       def cache_valid_auth(token, force: false, &generate_cache)
         cache_key = TOKEN_AUTH_CACHE_PREFIX + token
-        val = Rails.cache.read(cache_key) unless force
+        val = TokenAuthenticatable.cache.read(cache_key) unless force
         val ||= store_valid_auth(cache_key, &generate_cache)
         shallow_freeze(val)
       end
 
       def clear_auth_cache
-        Rails.cache.delete_matched TOKEN_AUTH_CACHE_PREFIX + "*"
+        TokenAuthenticatable.cache.delete_matched TOKEN_AUTH_CACHE_PREFIX + "*"
       end
 
       def shallow_freeze(val)
@@ -52,7 +57,7 @@ module Kracken
 
       def store_valid_auth(cache_key)
         val = yield
-        Rails.cache.write(cache_key, val, CACHE_TTL_OPTS) if val
+        TokenAuthenticatable.cache.write(cache_key, val, CACHE_TTL_OPTS) if val
         val
       end
 
@@ -62,6 +67,11 @@ module Kracken
         expires_in: ENV.fetch("KRACKEN_TOKEN_TTL", 1.minute).to_i,
         race_condition_ttl: 1.second,
       }.freeze
+
+      @cache = ActiveSupport::Cache.lookup_store(
+        :memory_store,
+        CACHE_TTL_OPTS.merge(size: 5.megabytes),
+      )
 
       # `authenticate_or_request_with_http_token` is a nice Rails helper:
       # http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Token/ControllerMethods.html#method-i-authenticate_or_request_with_http_token

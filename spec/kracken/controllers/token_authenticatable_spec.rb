@@ -72,7 +72,7 @@ module Kracken
             'HTTP_AUTHORIZATION' => "Token token=\"#{cached_token}\""
           }
 
-          Rails.cache.write cache_key, auth_info
+          Controllers::TokenAuthenticatable.cache.write cache_key, auth_info
           stub_const "Kracken::Authenticator", spy("Kracken::Authenticator")
         end
 
@@ -163,7 +163,7 @@ module Kracken
           expect {
             a_controller.authenticate_user_with_token!
           }.not_to change {
-            Rails.cache.exist?("auth/token/#{invalid_token}")
+            Controllers::TokenAuthenticatable.cache.exist?("auth/token/#{invalid_token}")
           }.from false
         end
       end
@@ -221,14 +221,16 @@ module Kracken
         it "sets the auth info as the cache value" do
           expect {
             a_controller.authenticate_user_with_token!
-          }.to change { Rails.cache.read("auth/token/any token") }.from(nil).to(
+          }.to change {
+            Controllers::TokenAuthenticatable.cache.read("auth/token/any token")
+          }.from(nil).to(
             id: :any_id,
             team_ids: [:some, :team, :ids],
           )
         end
 
         it "sets the cache expiration to one minute by default" do
-          expect(Rails.cache).to receive(:write).with(
+          expect(Controllers::TokenAuthenticatable.cache).to receive(:write).with(
             "auth/token/any token",
             anything,
             include(expires_in: 1.minute),

@@ -2,6 +2,17 @@ module Kracken
   class Authenticator
     attr_reader :auth_hash
 
+    # @private
+    def self.cache
+      @cache
+    end
+    @cache = ActiveSupport::Cache.lookup_store(
+      :memory_store,
+      size: 5.megabytes,
+      expires_in: 1.hour,
+      race_condition_ttl: 1.second,
+    )
+
     ## Factory Methods
 
     # Login the user with their credentails. Used for proxying the
@@ -23,7 +34,7 @@ module Kracken
       # for the user, set it to nil, fetch from cache and only query if there
       # was a cache-hit (thus user is still nil).
       user = nil
-      user_id = Rails.cache.fetch("auth/#{token}/#{auth.etag}") {
+      user_id = Authenticator.cache.fetch("auth/#{token}/#{auth.etag}") {
         user = self.new(auth.body).to_app_user
         user.id
       }
