@@ -15,7 +15,8 @@ module Kracken
         trace = wrapper.framework_trace if trace.empty?
 
         ActiveSupport::Deprecation.silence do
-          message = "\n#{exception.class} (#{exception.message}):\n"
+          # After Ruby 2.2.3 support change `String.new` to `+` literal
+          message = String.new("\n#{exception.class} (#{exception.message}):\n")
           message << exception.annoted_source_code.to_s if exception.respond_to?(:annoted_source_code)
           message << "  " << trace.join("\n  ")
           logger.fatal("#{message}\n\n")
