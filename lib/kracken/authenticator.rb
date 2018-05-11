@@ -19,13 +19,13 @@ module Kracken
     # authentication to the auth server, normally from a mobile app
     def self.user_with_credentials(email, password)
       auth = Kracken::CredentialAuthenticator.new.fetch(email, password)
-      self.new(auth.body).to_app_user
+      new(auth).to_app_user
     end
 
     # Login the user with an auth token. Used for API authentication for the
     # public APIs
     def self.user_with_token(token)
-      auth = Kracken::TokenAuthenticator.new.fetch(token)
+      auth = new(Kracken::TokenAuthenticator.new.fetch(token))
 
       # Don't want stale user models being pulled from the cache. So only
       # cache the `user_id`.
@@ -34,15 +34,30 @@ module Kracken
       # for the user, set it to nil, fetch from cache and only query if there
       # was a cache-hit (thus user is still nil).
       user = nil
-      user_id = Authenticator.cache.fetch("#{token}/#{auth.etag}") {
-        user = self.new(auth.body).to_app_user
+      user_id = Authenticator.cache.fetch(auth) {
+        user = auth.to_app_user
         user.id
       }
       user ||= Kracken.config.user_class.find(user_id)
     end
 
     def initialize(response)
-      @auth_hash = create_auth_hash(response)
+      @auth_hash = create_auth_hash(response.body)
+      @etag = if response.respond_to?(:etag)
+                response.etag
+              else
+                # https://github.com/rails/rails/blob/v5.2.0/actionpack/lib/action_dispatch/http/cache.rb#L136
+                # https://github.com/rails/rails/blob/v5.2.0/activesupport/lib/active_support/digest.rb
+                # https://github.com/rails/rails/blob/v4.2.10/actionpack/lib/action_dispatch/http/cache.rb#L87
+                ::Digest::MD5.hexdigest(response.body.to_json)
+              end
+      @etag.freeze
+    end
+
+    attr_reader :etag
+
+    def cache_key
+      "#{@auth_hash.provider || :unknown}/#{@auth_hash.uid}-#{etag}"
     end
 
     # Convert this Factory to a User object per the host app.
@@ -51,7 +66,7 @@ module Kracken
       Kracken.config.user_class.find_or_create_from_auth_hash(auth_hash)
     end
 
-    private
+  private
 
     def create_auth_hash(response_hash)
       Hashie::Mash.new({
