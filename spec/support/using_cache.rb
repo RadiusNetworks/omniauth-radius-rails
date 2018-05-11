@@ -10,5 +10,7 @@ RSpec.shared_context "using Rails cache", :using_cache do
 
   before do
     Rails.cache.clear
+    Kracken::Controllers::TokenAuthenticatable.cache.clear
+    Kracken::Authenticator.cache.clear
   end
 end
