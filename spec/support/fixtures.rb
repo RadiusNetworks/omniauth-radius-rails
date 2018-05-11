@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kracken
   module Fixtures
     # Fixtures gathered from a request kracken server running locally

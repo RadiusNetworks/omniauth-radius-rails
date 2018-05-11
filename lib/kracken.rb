@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "kracken/env"
 require "kracken/error"
 require "kracken/engine"

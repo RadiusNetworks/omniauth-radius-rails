@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kracken
   module JsonApi
     # Error logging methods used by `ActionDispatch::DebugExceptions`

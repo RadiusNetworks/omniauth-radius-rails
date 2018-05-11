@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kracken
   class Authenticator
     attr_reader :auth_hash

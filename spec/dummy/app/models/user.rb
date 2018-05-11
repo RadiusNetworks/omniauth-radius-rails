@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # In memory user model
 class User
   @@users = {}

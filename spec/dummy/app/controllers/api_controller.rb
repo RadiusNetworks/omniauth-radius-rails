@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApiController < ActionController::Base
   include Kracken::Controllers::TokenAuthenticatable
   include Kracken::Controllers::JsonApiCompatible

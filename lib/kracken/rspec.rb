@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kracken
   module SpecHelper
     @@current_user = nil

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "kracken/json_api"
 
 module Kracken

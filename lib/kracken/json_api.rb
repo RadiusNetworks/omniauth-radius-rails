@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'json_api/exception_wrapper'
 require_relative 'json_api/path'
 require_relative 'json_api/public_exceptions'

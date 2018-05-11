@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kracken
   class Config
     attr_accessor :app_id, :app_secret

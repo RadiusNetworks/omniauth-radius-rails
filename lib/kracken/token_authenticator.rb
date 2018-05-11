@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kracken
   class TokenAuthenticator
     attr_reader :response

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 require "support/base_controller_double"
 require "support/using_cache"

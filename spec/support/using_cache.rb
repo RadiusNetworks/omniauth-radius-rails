@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_context "using Rails cache", :using_cache do
   before(:context) do
     @org_cache = Rails.cache

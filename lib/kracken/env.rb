@@ -1,4 +1,6 @@
 
+# frozen_string_literal: true
+
 # If this gem is loaded via bundler before the rails initializer we need to
 # manually pull in dotenv or the .env file will not be read. Ugly hack, but
 # since the omniauth strategy sets the options when the class is defined we
