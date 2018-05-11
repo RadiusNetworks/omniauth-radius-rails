@@ -72,7 +72,9 @@ module Kracken
             'HTTP_AUTHORIZATION' => "Token token=\"#{cached_token}\""
           }
 
-          Controllers::TokenAuthenticatable.cache.write cache_key, auth_info
+          Controllers::TokenAuthenticatable.store_valid_auth cached_token do
+            auth_info
+          end
           stub_const "Kracken::Authenticator", spy("Kracken::Authenticator")
         end
 
@@ -163,7 +165,9 @@ module Kracken
           expect {
             a_controller.authenticate_user_with_token!
           }.not_to change {
-            Controllers::TokenAuthenticatable.cache.exist?("#{invalid_token}")
+            Controllers::TokenAuthenticatable.cache.exist?(
+              Controllers::TokenAuthenticatable.auth_cache_key(invalid_token)
+            )
           }.from false
         end
       end
@@ -218,20 +222,28 @@ module Kracken
           expect(a_controller.current_team_ids).to be_frozen
         end
 
-        it "sets the auth info as the cache value" do
+        it "sets the auth info, along with a nonce, and HMAC as the cache value" do
           expect {
             a_controller.authenticate_user_with_token!
           }.to change {
-            Controllers::TokenAuthenticatable.cache.read("any token")
+            Controllers::TokenAuthenticatable.cache.read(
+              Controllers::TokenAuthenticatable.auth_cache_key("any token")
+            )
           }.from(nil).to(
-            id: :any_id,
-            team_ids: [:some, :team, :ids],
+            [
+              {
+                id: :any_id,
+                team_ids: [:some, :team, :ids],
+              },
+              be_a(String).and(satisfy { |s| s.size == 64 }),
+              be_a(String).and(satisfy { |s| s.size == 32 }),
+            ]
           )
         end
 
         it "sets the cache expiration to one minute by default" do
           expect(Controllers::TokenAuthenticatable.cache).to receive(:write).with(
-            "any token",
+            Controllers::TokenAuthenticatable.auth_cache_key("any token"),
             anything,
             include(expires_in: 1.minute),
           )
@@ -242,6 +254,51 @@ module Kracken
           expect(Kracken.config.user_class).not_to receive(:find)
           a_controller.authenticate_user_with_token!
           expect(a_controller.current_user).to be a_user
+        end
+
+        it "treats an HMAC verification failure as a miss" do
+          initial_salt = "salt" * 16
+          initial_hmac = "hmac" * 8
+          cache_key = Controllers::TokenAuthenticatable.auth_cache_key(
+            "any token"
+          )
+          Controllers::TokenAuthenticatable.cache.write(
+            cache_key,
+            [
+              {
+                id: :any_id,
+                team_ids: [:some, :team, :ids],
+              },
+              initial_salt,
+              initial_hmac,
+            ],
+          )
+
+          expect {
+            a_controller.authenticate_user_with_token!
+          }.to change {
+            Controllers::TokenAuthenticatable.cache.read(cache_key)
+          }.from(
+            [
+              {
+                id: :any_id,
+                team_ids: [:some, :team, :ids],
+              },
+              initial_salt,
+              initial_hmac,
+            ],
+          ).to(
+            [
+              {
+                id: :any_id,
+                team_ids: [:some, :team, :ids],
+              },
+              be_a(String).and(satisfy { |s| s.size == 64 && s != initial_salt}),
+              be_a(String).and(satisfy { |s| s.size == 32 && s != initial_hmac}),
+            ]
+          )
+          expect(Authenticator).to have_received(:user_with_token)
+            .with(valid_token)
         end
       end
     end
