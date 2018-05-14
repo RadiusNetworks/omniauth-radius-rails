@@ -36,7 +36,9 @@ module Kracken
           a_controller.params = { token: expected_token }
 
           expect {
-            a_controller.authenticate_user_with_token!
+            ActiveSupport::Deprecation.silence do
+              a_controller.authenticate_user_with_token!
+            end
           }.to change {
             a_controller.request.env
           }.from(
