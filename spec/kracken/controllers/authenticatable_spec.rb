@@ -43,8 +43,12 @@ module Kracken
       end
 
       context "when no users are logged in" do
-        it "#authenticate! redirects to root_url" do
-          allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
+        let(:html) { Mime::Type.lookup("text/html") }
+        let(:json) { Mime::Type.lookup("application/json") }
+        let(:js) { Mime::Type.lookup("application/javascript") }
+
+        it "#authenticate! redirects to root_url for format html" do
+          allow(controller).to receive(:request).and_return(double(format: html, fullpath: nil))
           allow(controller).to receive(:redirect_to)
 
           controller.authenticate_user!
@@ -54,6 +58,28 @@ module Kracken
 
         it "#user_signed_in? is false" do
           expect(controller.user_signed_in?).to be_falsey
+        end
+
+        it "#authenticate! doesn't redirect for format json" do
+          allow(controller).to receive(:request).and_return(double(format: json, fullpath: nil))
+          allow(controller).to receive(:redirect_to)
+          allow(controller).to receive(:render)
+
+          controller.authenticate_user!
+
+          expect(controller).not_to have_received(:redirect_to)
+          expect(controller).to have_received(:render)
+        end
+
+        it "#authenticate! doesn't redirect for format js" do
+          allow(controller).to receive(:request).and_return(double(format: js, fullpath: nil))
+          allow(controller).to receive(:redirect_to)
+          allow(controller).to receive(:head)
+
+          controller.authenticate_user!
+
+          expect(controller).not_to have_received(:redirect_to)
+          expect(controller).to have_received(:head).with(:unauthorized)
         end
 
       end
