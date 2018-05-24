@@ -148,15 +148,6 @@ module Kracken
       # transfer the knowledge about also checking for the params.
       def munge_header_auth_token!
         return unless params[:token]
-        deprecation = ActiveSupport::Deprecation.new("1.0", "kracken")
-        deprecation.behavior = ActiveSupport::Deprecation.behavior
-        deprecation.silenced = ActiveSupport::Deprecation.silenced
-        controller_action = "#{request.controller_class}#" \
-          "#{request.path_parameters[:action] || :index}"
-        deprecation.warn "[#{controller_action}][kracken] Passing auth " \
-          "tokens as query parameters is deprecated. This is insecure and " \
-          "will be removed in a future version of Kracken. Use the " \
-          "'Authorization' header instead."
         request.env['HTTP_AUTHORIZATION'] = "Token token=\"#{params[:token]}\""
       end
 
