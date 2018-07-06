@@ -17,6 +17,10 @@ module Kracken
         Kracken::SpecHelper.current_user = user
       end
 
+      def sign_out(_ignored = nil)
+        Kracken::SpecHelper.current_user = nil
+      end
+
       def token_authorize(user, token:)
         Kracken::Controllers::TokenAuthenticatable::cache_valid_auth(token, force: true) do
           { id: user.id, team_ids: user.team_ids }
@@ -29,7 +33,7 @@ module Kracken
         Kracken::SpecHelper.current_user = user
       end
 
-      def sign_out(ignored = nil)
+      def sign_out(_ignored = nil)
         Kracken::SpecHelper.current_user = nil
       end
 
