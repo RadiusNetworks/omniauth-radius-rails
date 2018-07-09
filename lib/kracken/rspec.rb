@@ -12,10 +12,18 @@ module Kracken
       @@current_user = current_user
     end
 
-    module Request
+    module SignInShim
       def sign_in(user = nil)
         Kracken::SpecHelper.current_user = user
       end
+
+      def sign_out(_ignored = nil)
+        Kracken::SpecHelper.current_user = nil
+      end
+    end
+
+    module Request
+      include SignInShim
 
       def token_authorize(user, token:)
         Kracken::Controllers::TokenAuthenticatable::cache_valid_auth(token, force: true) do
@@ -25,21 +33,13 @@ module Kracken
     end
 
     module Controller
-      def sign_in(user = nil)
-        Kracken::SpecHelper.current_user = user
-      end
-
-      def sign_out(ignored = nil)
-        Kracken::SpecHelper.current_user = nil
-      end
+      include SignInShim
 
       def current_user
         Kracken::SpecHelper.current_user
       end
     end
-
   end
-
 end
 
 # monkey patch current_user
