@@ -17,11 +17,13 @@ export RACK_ROOT="$RAILS_ROOT"
 echo " ---> Running tests"
 ./bin/rspec --require rails_helper
 
-# Script for running Rubocop
-# A Ruby static code analyzer, based on the community Ruby style guide.
-# http://rubocop.readthedocs.io
-echo " ---> Running rubocop"
-./bin/rubocop --config .rubocop.yml --lint
+if [ "$TRAVIS_RUBY_VERSION" = "2.5.0" ]; then
+  # Script for running Rubocop
+  # A Ruby static code analyzer, based on the community Ruby style guide.
+  # http://rubocop.readthedocs.io
+  echo " ---> Running rubocop"
+  ./bin/rubocop --config .rubocop.yml --lint
+fi
 
 # Script for running Brakeman tests
 # Brakeman is a security scanner

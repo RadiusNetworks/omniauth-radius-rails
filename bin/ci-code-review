@@ -12,6 +12,10 @@ if [[ "$TRAVIS_PULL_REQUEST" = "false" ]] || [[ "$TRAVIS_BRANCH" = "production" 
   exit
 fi
 
+if ! [ "$TRAVIS_RUBY_VERSION" = "2.5.0" ]; then
+  exit
+fi
+
 set -e
 cd "$(dirname "$0")/.."
 

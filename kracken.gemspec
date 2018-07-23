@@ -27,6 +27,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-rails', '~> 3.5'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'pry-nav'
-  s.add_development_dependency 'radius-spec', '~> 0.4'
   s.add_development_dependency 'webmock'
 end
