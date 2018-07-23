@@ -15,7 +15,9 @@ Gem::Specification.new do |s|
   s.summary     = 'Rails engine that consumes the Kracken'
   s.description = 'Rails engine for use with the Radius Networks Account Server.'
 
-  s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
+  s.files = Dir['{app,exe,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
+  s.bindir      = "exe"
+  s.executables = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
 
   s.add_dependency 'rails', [">= 4.0", "< 6.0"]
   s.add_dependency 'omniauth', '~> 1.0'
