@@ -6,7 +6,7 @@ module Kracken
   class Engine < ::Rails::Engine
     isolate_namespace Kracken
 
-    initializer "kracken.omniauth" do |app|
+    initializer "kracken.omniauth" do |_app|
       Rails.application.config.middleware.use OmniAuth::Builder do
         provider :radius, Kracken.config.app_id, Kracken.config.app_secret
       end

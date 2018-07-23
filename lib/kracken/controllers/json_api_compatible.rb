@@ -105,9 +105,8 @@ module Kracken
           raise ::ActionController::UnknownFormat
         end
 
-      private
-
         ALLOWED_MEDIA_TYPES = [Mime[:json]].freeze
+        private_constant :ALLOWED_MEDIA_TYPES
       end
       include DataIntegrity
 

@@ -16,7 +16,7 @@ module Kracken
            :current_user,
            :current_user_id
 
-    def authenticate_or_request_with_http_token(realm = nil)
+    def authenticate_or_request_with_http_token(_realm = nil)
       /\AToken token="(?<token>.*)"\z/ =~ request.env['HTTP_AUTHORIZATION']
       yield token if block_given?
     end

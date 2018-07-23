@@ -25,7 +25,7 @@ module Kracken
       #
       # Modified from https://github.com/rails/rails/blob/60d0aec7/actionpack/lib/action_controller/metal/http_authentication.rb#L490-L499
       if Rails::VERSION::MAJOR >= 5
-        def request_http_token_authentication(realm = 'Application', message = nil)
+        def request_http_token_authentication(realm = 'Application', _message = nil)
           headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
           raise TokenUnauthorized, "Invalid Credentials"
         end
@@ -115,7 +115,7 @@ module Kracken
         authenticate_or_request_with_http_token(realm) { |token, _options|
           # Attempt to reduce ivar namespace conflicts with controllers
           @_auth_info = cache_valid_auth(token) {
-            if @current_user = Authenticator.user_with_token(token)
+            if (@current_user = Authenticator.user_with_token(token))
               { id: @current_user.id, team_ids: @current_user.team_ids }
             end
           }

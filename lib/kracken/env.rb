@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 # If this gem is loaded via bundler before the rails initializer we need to
@@ -8,7 +7,8 @@
 begin
   require 'dotenv'
   Dotenv.load
-rescue LoadError
+rescue LoadError => e
+  raise unless e.message.include?('dotenv')
 end
 
 module Kracken

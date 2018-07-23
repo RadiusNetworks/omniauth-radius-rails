@@ -61,7 +61,7 @@ module Kracken
         end
 
         response
-      rescue Exception => exception
+      rescue Exception => exception # rubocop:disable Lint/RescueException
         wrapper = exception_wrapper(env, exception)
         log_error(env, wrapper)
         render_json_error(wrapper)
@@ -80,7 +80,7 @@ module Kracken
       end
 
       if Rails.env.production?
-        def additional_details(error)
+        def additional_details(_error)
           {}
         end
       else
