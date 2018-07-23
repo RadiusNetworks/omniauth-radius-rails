@@ -1,0 +1,11 @@
+inherit_mode:
+  merge:
+    - AllowedNames
+    - Exclude
+    - IgnoredPatterns
+
+inherit_gem:
+  radius-spec: common_rubocop_rails.yml
+
+AllCops:
+  TargetRubyVersion: 2.2.3 # Until we can drop support
