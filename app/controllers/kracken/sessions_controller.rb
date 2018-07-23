@@ -2,6 +2,7 @@
 
 module Kracken
   class SessionsController < ActionController::Base
+    protect_from_forgery with: :exception
 
     def create
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
