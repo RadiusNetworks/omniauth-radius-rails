@@ -177,7 +177,7 @@ module Kracken
       # If the data was a Hash, then the single `permit_params` object is returned.
       # Or the tuple [`id`, `permitd_params`] respectively.
       def process_params(permitted_params)
-        single_resource = Hash === data_root
+        single_resource = data_root.respond_to?(:to_hash)
         data = Array.wrap(data_root)
         mapping = if params[:id].blank?
                     data.map { |attrs| attrs.permit(permitted_params) }
