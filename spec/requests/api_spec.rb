@@ -14,11 +14,11 @@ module Kracken
 
     # Temporary work around while we support versions of Rails before 4
     if Rails::VERSION::MAJOR >= 5
-      def request_resource(path, params: {}, headers: {})
+      def request_resource(_path, params: {}, headers: {})
         get api_index_path, params: params, headers: headers
       end
     else
-      def request_resource(path, params: {}, headers: {})
+      def request_resource(_path, params: {}, headers: {})
         get api_index_path, params, headers
       end
     end

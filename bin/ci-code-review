@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Requires REVIEWDOG_GITHUB_API_TOKEN to be set in the envionment. We use a
+# token from the admin account so that the comments look as if they come from
+# Radbot.
+
+# See:
+#   - https://docs.travis-ci.com/user/environment-variables/#Convenience-Variables
+#   - https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
+#   - https://docs.travis-ci.com/user/pull-requests/#Pull-Requests-and-Security-Restrictions
+if [[ "$TRAVIS_PULL_REQUEST" = "false" ]] || [[ "$TRAVIS_BRANCH" = "production" ]]; then
+  exit
+fi
+
+if ! [ "$TRAVIS_RUBY_VERSION" = "2.5.0" ]; then
+  exit
+fi
+
+set -e
+cd "$(dirname "$0")/.."
+
+REVIEWDOG_VERSION="0.9.9"
+
+if ! [ "$(./bin/reviewdog -version)" = "$REVIEWDOG_VERSION" ]; then
+  echo "Installing reviewdog version ${REVIEWDOG_VERSION}..."
+  curl -fsSL https://github.com/haya14busa/reviewdog/releases/download/$REVIEWDOG_VERSION/reviewdog_linux_amd64 \
+    -o ./bin/reviewdog
+  chmod +x ./bin/reviewdog
+fi
+
+echo Rubocop Version: $(./bin/rubocop --version)
+echo Review Dog Version: $(./bin/reviewdog -version)
+
+# Add `-diff="git diff master"` to reviewdog args when running locally
+./bin/rubocop --config .rubocop.yml --extra-details --display-style-guide --rails | \
+  ./bin/reviewdog -f=rubocop -reporter=github-pr-check

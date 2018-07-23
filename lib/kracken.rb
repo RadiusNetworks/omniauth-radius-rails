@@ -17,7 +17,7 @@ module Kracken
   mattr_accessor :config
   @@config = Config.new
 
-  def self.setup(&block)
+  def self.setup
     yield @@config
   end
 end

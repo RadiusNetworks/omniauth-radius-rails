@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# script/ci: Setup environment for CI to run tests. This is primarily
+#            designed to run on the continuous integration server.
+
+set -e
+cd "$(dirname "$0")/.."
+
+# setup environment
+export DEFAULT_HOST="https://account.radiusnetworks.com"
+export RAILS_ROOT="$(cd "$(dirname "$0")"/.. && pwd)"
+export RAILS_ENV="test"
+export RACK_ENV="test"
+export RACK_ROOT="$RAILS_ROOT"
+
+# Run the specs for the rails app
+echo " ---> Running tests"
+./bin/rspec --require rails_helper
+
+if [ "$TRAVIS_RUBY_VERSION" = "2.5.0" ]; then
+  # Script for running Rubocop
+  # A Ruby static code analyzer, based on the community Ruby style guide.
+  # http://rubocop.readthedocs.io
+  echo " ---> Running rubocop"
+  ./bin/rubocop --config .rubocop.yml --lint
+fi
+
+# Script for running Brakeman tests
+# Brakeman is a security scanner
+# https://github.com/presidentbeef/brakeman.
+echo " ---> Running breakman"
+gem install --no-rdoc --no-ri brakeman slim coffee-rails
+brakeman --run-all-checks --exit-on-warn --ignore-config config/brakeman.ignore .

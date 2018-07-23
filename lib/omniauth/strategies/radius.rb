@@ -5,7 +5,8 @@ require 'omniauth-oauth2'
 begin
   require 'dotenv'
   Dotenv.load
-rescue LoadError
+rescue LoadError => e
+  raise unless e.message.include?('dotenv')
 end
 
 module OmniAuth
@@ -26,17 +27,15 @@ module OmniAuth
 
       info do
         raw_info["info"].slice(
-          *%w{
-            first_name
-            last_name
-            email
-            uid
-            confirmed
-            teams
-            linked_accounts
-            admin
-            subscription_level
-          }
+          "first_name",
+          "last_name",
+          "email",
+          "uid",
+          "confirmed",
+          "teams",
+          "linked_accounts",
+          "admin",
+          "subscription_level",
         )
       end
 
