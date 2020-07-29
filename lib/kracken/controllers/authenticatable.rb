@@ -71,24 +71,18 @@ module Kracken
       #    delete the cookie
       #
       def handle_user_cache_cookie!
-        if cookies[:_radius_user_cache_key]
-          if cookies[:_radius_user_cache_key] == "none"
-            # Sign out current user
-            session.delete :user_id
-
-            # Clear that user's cache key
-            session.delete :user_cache_key
-
-          elsif session[:user_cache_key] != cookies[:_radius_user_cache_key]
-            # Delete the cookie to prevent redirect loops
-            cookies.delete :_radius_user_cache_key
-
-            # Redirect to the account app
-            redirect_to_sign_in
+        if SESSION_REDIS
+          handle_user_cache_cookie_with_redis
+        else
+          if cookies[:_radius_user_cache_key]
+            if cookies[:_radius_user_cache_key] == "none"
+              delete_session_data
+            elsif session[:user_cache_key] != cookies[:_radius_user_cache_key]
+              clear_cache_cookie_and_sign_out
+            end
           end
         end
       end
-
 
       def current_user=(u)
         @current_user = u
@@ -123,6 +117,38 @@ module Kracken
       end
 
       private
+
+      def handle_user_cache_cookie_with_redis
+        # If the user passes us a cache key cookie:
+        if cookies[:_radius_user_cache_key]
+          expected_val = SESSION_REDIS.get(cookies[:_radius_user_cache_key])
+
+          # And we do not have that cookie in Redis
+          if !expected_val
+            delete_session_data
+          # Or we have it in Redis, but it may be somebody else's
+          # - it's not what we expect from their session
+          elsif expected_val && expected_val != session[:user_cache_key]
+            clear_cache_cookie_and_sign_out
+          end
+        end
+      end
+
+      def delete_session_data
+        # Sign out current user
+        session.delete :user_id
+
+        # Clear that user's cache key
+        session.delete :user_cache_key
+      end
+
+      def clear_cache_cookie_and_sign_out
+        # Delete the cookie to prevent redirect loops
+        cookies.delete :_radius_user_cache_key
+
+        # Redirect to the account app
+        redirect_to_sign_in
+      end
 
       def user_class
         Kracken.config.user_class
