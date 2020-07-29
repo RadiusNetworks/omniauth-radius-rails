@@ -73,13 +73,11 @@ module Kracken
       def handle_user_cache_cookie!
         if SESSION_REDIS
           handle_user_cache_cookie_with_redis
-        else
-          if cookies[:_radius_user_cache_key]
-            if cookies[:_radius_user_cache_key] == "none"
-              delete_session_data
-            elsif session[:user_cache_key] != cookies[:_radius_user_cache_key]
-              clear_cache_cookie_and_sign_out
-            end
+        elsif cookies[:_radius_user_cache_key]
+          if cookies[:_radius_user_cache_key] == "none"
+            delete_session_data
+          elsif session[:user_cache_key] != cookies[:_radius_user_cache_key]
+            clear_cache_cookie_and_sign_out
           end
         end
       end
@@ -119,19 +117,23 @@ module Kracken
       private
 
       def handle_user_cache_cookie_with_redis
-        # If the user passes us a cache key cookie:
-        if cookies[:_radius_user_cache_key]
-          expected_val = SESSION_REDIS.get(cookies[:_radius_user_cache_key])
+        return redirect_to_sign_in unless session_present?
+        return if session_and_redis_match?
 
-          # And we do not have that cookie in Redis
-          if !expected_val
-            delete_session_data
-          # Or we have it in Redis, but it may be somebody else's
-          # - it's not what we expect from their session
-          elsif expected_val && expected_val != session[:user_cache_key]
-            clear_cache_cookie_and_sign_out
-          end
-        end
+        delete_session_data
+        redirect_to_sign_in
+      end
+
+      def session_present?
+        session[:user_id] && session[:user_cache_key]
+      end
+
+      def session_and_redis_match?
+        SESSION_REDIS.get(user_session_key(session[:user_id])) == session[:user_cache_key]
+      end
+
+      def user_session_key(id)
+        "rnsession:#{id}"
       end
 
       def delete_session_data

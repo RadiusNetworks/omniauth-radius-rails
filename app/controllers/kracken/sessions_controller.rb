@@ -7,7 +7,7 @@ module Kracken
     def create
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
       session[:user_id] = @user.id
-      session[:user_cache_key] = cookies[:_radius_user_cache_key]
+      session[:user_cache_key] = SESSION_REDIS.get(user_session_key(@user.id))
       session[:token_expires_at] = Time.zone.at(auth_hash[:credentials][:expires_at])
       redirect_to return_to_path
     end
@@ -43,6 +43,10 @@ module Kracken
       current_root = URI(request.url)
       current_root.path = ''
       "?redirect_to=#{CGI.escape(current_root.to_s)}"
+    end
+
+    def user_session_key(id)
+      "rnsession:#{id}"
     end
   end
 end
