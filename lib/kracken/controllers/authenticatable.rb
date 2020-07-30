@@ -129,7 +129,7 @@ module Kracken
       end
 
       def session_and_redis_match?
-        SESSION_REDIS.get(user_session_key(session[:user_id])) == session[:user_cache_key]
+        SESSION_REDIS.get(user_session_key(session[:user_uid])) == session[:user_cache_key]
       end
 
       def user_session_key(id)
