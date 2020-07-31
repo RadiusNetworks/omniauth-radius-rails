@@ -71,15 +71,11 @@ module Kracken
       #    delete the cookie
       #
       def handle_user_cache_cookie!
-        if SESSION_REDIS
-          handle_user_cache_cookie_with_redis
-        elsif cookies[:_radius_user_cache_key]
-          if cookies[:_radius_user_cache_key] == "none"
-            delete_session_data
-          elsif session[:user_cache_key] != cookies[:_radius_user_cache_key]
-            clear_cache_cookie_and_sign_out
-          end
-        end
+        return redirect_to_sign_in unless session_present?
+        return if session_and_redis_match?
+
+        delete_session_data
+        redirect_to_sign_in
       end
 
       def current_user=(u)
@@ -116,24 +112,12 @@ module Kracken
 
       private
 
-      def handle_user_cache_cookie_with_redis
-        return redirect_to_sign_in unless session_present?
-        return if session_and_redis_match?
-
-        delete_session_data
-        redirect_to_sign_in
-      end
-
       def session_present?
         session[:user_id] && session[:user_cache_key]
       end
 
       def session_and_redis_match?
-        SESSION_REDIS.get(user_session_key(session[:user_uid])) == session[:user_cache_key]
-      end
-
-      def user_session_key(id)
-        "rnsession:#{id}"
+        SessionManager.update(session[:user_uid]) == session[:user_cache_key]
       end
 
       def delete_session_data

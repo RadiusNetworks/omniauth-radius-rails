@@ -8,7 +8,7 @@ module Kracken
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
       session[:user_id] = @user.id
       session[:user_uid] = @user.uid
-      session[:user_cache_key] = SESSION_REDIS.get(user_session_key(@user.uid))
+      session[:user_cache_key] = SessionManager.get(@user.uid)
       session[:token_expires_at] = Time.zone.at(auth_hash[:credentials][:expires_at])
 
       redirect_to return_to_path
