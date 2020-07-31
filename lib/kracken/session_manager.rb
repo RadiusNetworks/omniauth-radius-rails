@@ -13,7 +13,7 @@ class SessionManager
     conn.get(user_session_key(user_id))
   end
 
-  def self.clear(user_id)
+  def self.del(user_id)
     return unless active?
 
     conn.del(user_session_key(user_id))

@@ -117,7 +117,7 @@ module Kracken
       end
 
       def session_and_redis_match?
-        SessionManager.update(session[:user_uid]) == session[:user_cache_key]
+        ::SessionManager.get(session[:user_uid]) == session[:user_cache_key]
       end
 
       def delete_session_data
