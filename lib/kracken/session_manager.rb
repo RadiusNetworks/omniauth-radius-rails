@@ -1,31 +1,41 @@
-class SessionManager
-  def self.conn
-    Redis.new(url: ENV["REDIS_SESSION_URL"])
-  end
+# frozen_string_literal: true
 
-  def self.active?
-    ENV["REDIS_SESSION_URL"].present?
-  end
+module Kracken
+  module SessionManager
+    def self.conn
+      @conn ||= if ENV["REDIS_SESSION_URL"].present?
+                  Redis.new(url: ENV["REDIS_SESSION_URL"])
+                else
+                  NullRedis.new
+                end
+    end
 
-  def self.get(user_id)
-    return unless active?
+    def self.get(user_id)
+      conn.get(user_session_key(user_id))
+    end
 
-    conn.get(user_session_key(user_id))
-  end
+    def self.del(user_id)
+      conn.del(user_session_key(user_id))
+    end
 
-  def self.del(user_id)
-    return unless active?
+    def self.update(user_id, value)
+      conn.set(user_session_key(user_id), value)
+    end
 
-    conn.del(user_session_key(user_id))
-  end
+    def self.user_session_key(user_id)
+      "rnsession:#{user_id}"
+    end
 
-  def self.update(user_id, value)
-    return unless active?
+    class NullRedis
+      # rubocop:disable Style/EmptyMethod
+      def initialize(*); end
 
-    conn.set(user_session_key(user_id), value)
-  end
+      def del(*); end
 
-  def self.user_session_key(user_id)
-    "rnsession:#{user_id}"
+      def get(*); end
+
+      def set(*); end
+      # rubocop:enable Style/EmptyMethod
+    end
   end
 end

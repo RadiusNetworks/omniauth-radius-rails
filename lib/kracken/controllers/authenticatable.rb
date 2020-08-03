@@ -71,7 +71,7 @@ module Kracken
       #    delete the cookie
       #
       def handle_user_cache_cookie!
-        return redirect_to_sign_in unless session_present?
+        return unless session_present?
         return if session_and_redis_match?
 
         delete_session_data
@@ -113,27 +113,20 @@ module Kracken
       private
 
       def session_present?
-        session[:user_id] && session[:user_cache_key]
+        session[:user_uid] && session[:user_cache_key]
       end
 
       def session_and_redis_match?
-        ::SessionManager.get(session[:user_uid]) == session[:user_cache_key]
+        Kracken::SessionManager.get(session[:user_uid]) == session[:user_cache_key]
       end
 
       def delete_session_data
         # Sign out current user
         session.delete :user_id
 
-        # Clear that user's cache key
+        # Clear that user's cache data
+        session.delete :user_uid
         session.delete :user_cache_key
-      end
-
-      def clear_cache_cookie_and_sign_out
-        # Delete the cookie to prevent redirect loops
-        cookies.delete :_radius_user_cache_key
-
-        # Redirect to the account app
-        redirect_to_sign_in
       end
 
       def user_class
