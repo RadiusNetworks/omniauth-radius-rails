@@ -29,5 +29,5 @@ fi
 # Brakeman is a security scanner
 # https://github.com/presidentbeef/brakeman.
 echo " ---> Running breakman"
-gem install --no-rdoc --no-ri brakeman slim coffee-rails
+gem install brakeman slim coffee-rails
 brakeman --run-all-checks --exit-on-warn --ignore-config config/brakeman.ignore .
