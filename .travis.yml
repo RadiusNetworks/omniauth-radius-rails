@@ -14,13 +14,11 @@ rvm:
   - 2.5.0
 env:
   - RAILS_VERSION='~> 5.2.0'
-  - RAILS_VERSION='~> 5.1.0'
-  - RAILS_VERSION='5-1-stable'
   - RAILS_VERSION='5-2-stable'
 matrix:
   include:
     - rvm: 2.2.3
-      env: RAILS_VERSION='~> 5.1.0'
+      env: RAILS_VERSION='~> 5.2.0'
     - rvm: 2.4.4
       env: RAILS_VERSION='~> 4.2.10'
   fast_finish: true
