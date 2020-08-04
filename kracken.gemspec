@@ -21,11 +21,11 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'rails', [">= 5.2", "< 6.0"]
   s.add_dependency 'omniauth', '~> 1.0'
-  s.add_dependency 'faraday', '~> 0.8'
+  s.add_dependency 'faraday', ['>= 0.8', '< 2.0']
   s.add_dependency 'omniauth-oauth2', '~> 1.1'
 
   s.add_development_dependency 'rspec-rails', '~> 3.5'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'pry-nav'
-  s.add_development_dependency 'webmock'
+  s.add_development_dependency 'webmock', '~> 3.8'
 end
