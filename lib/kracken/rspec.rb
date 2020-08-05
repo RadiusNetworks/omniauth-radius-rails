@@ -46,6 +46,7 @@ end
 module Kracken
   module Controllers
     module Authenticatable
+      undef_method :current_user
       def current_user
         Kracken::SpecHelper.current_user
       end
