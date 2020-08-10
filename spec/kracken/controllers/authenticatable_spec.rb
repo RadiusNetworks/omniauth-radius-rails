@@ -136,47 +136,34 @@ module Kracken
           expect(controller).to_not have_received(:redirect_to)
         end
 
-        context "user cache cookie" do
-          it "nothing if the cache cookie does not exist" do
-            allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
-            allow(controller).to receive(:redirect_to)
+        context "user cache key" do
+          it "ends session and redirects if stored key does not match session key" do
             controller.session[:user_cache_key] = "123"
+            controller.session[:user_uid] = "123"
 
-            controller.handle_user_cache_cookie!
-
-            expect(controller).to_not have_received(:redirect_to)
-          end
-
-          it "signs the current user out when the cache cookie is 'none'" do
             allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
             allow(controller).to receive(:redirect_to)
-            controller.cookies[:_radius_user_cache_key] = "123"
+            allow(Kracken::SessionManager).to receive(:get).and_return("456")
+
+            expect(controller).to receive(:redirect_to).with("/")
+            expect(controller.session).to receive(:delete).with(:user_id)
+            expect(controller.session).to receive(:delete).with(:user_uid)
+            expect(controller.session).to receive(:delete).with(:user_cache_key)
+
+            controller.handle_user_cache_key!
+          end
+
+          it "does nothing if session keys match" do
             controller.session[:user_cache_key] = "123"
+            controller.session[:user_uid] = "123"
 
-            controller.handle_user_cache_cookie!
-
-            expect(controller).to_not have_received(:redirect_to)
-          end
-
-          it "redirects when the cache cookie is different than the session" do
             allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
-            allow(controller).to receive(:cookies).and_return({_radius_user_cache_key: "123"})
             allow(controller).to receive(:redirect_to)
-            controller.handle_user_cache_cookie!
+            allow(Kracken::SessionManager).to receive(:get).and_return("123")
 
-            expect(controller).to have_received(:redirect_to).with("/")
-          end
+            expect(controller).to_not receive(:redirect_to).with("/")
 
-          it "does not redirect when the cache cookie matches the session" do
-            controller.session = spy
-            allow(controller).to receive(:redirect_to)
-            controller.cookies[:_radius_user_cache_key] = "none"
-
-            controller.handle_user_cache_cookie!
-
-            expect(controller).to_not have_received(:redirect_to)
-            expect(controller.session).to have_received(:delete).with(:user_id)
-            expect(controller.session).to have_received(:delete).with(:user_cache_key)
+            controller.handle_user_cache_key!
           end
         end
       end

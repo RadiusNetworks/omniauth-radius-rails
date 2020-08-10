@@ -6,7 +6,7 @@ module Kracken
 
       def self.included(base)
         base.instance_exec do
-          before_action :handle_user_cache_cookie!
+          before_action :handle_user_cache_key!
           before_action :authenticate_user!
           helper_method :sign_out_path, :sign_up_path, :sign_in_path,
                         :current_user, :user_signed_in?
@@ -64,13 +64,12 @@ module Kracken
       #
       # This method will:
       #
-      #  - Check for the `_radius_user_cache_key` tld cookie
-      #  - If the key is "none" log them out
+      #  - Check for the presence of a user cache key in Redis
       #  - Compare it to the `user_cache_key` in the session
       #  - If they don't match, redirect them to the oauth provider and
-      #    delete the cookie
+      #    delete the session
       #
-      def handle_user_cache_cookie!
+      def handle_user_cache_key!
         return unless session_present?
         return if session_and_redis_match?
 
