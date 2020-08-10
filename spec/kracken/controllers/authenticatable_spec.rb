@@ -137,6 +137,15 @@ module Kracken
         end
 
         context "user cache key" do
+          it "does nothing if the session does not exist" do
+            allow(controller).to receive(:request).and_return(double(format: nil, fullpath: nil))
+            allow(controller).to receive(:redirect_to)
+
+            controller.handle_user_cache_key!
+
+            expect(controller).to_not have_received(:redirect_to)
+          end
+
           it "ends session and redirects if stored key does not match session key" do
             controller.session[:user_cache_key] = "123"
             controller.session[:user_uid] = "123"
