@@ -6,7 +6,7 @@ module Kracken
 
       def self.included(base)
         base.instance_exec do
-          before_action :handle_user_cache_cookie!
+          before_action :handle_user_cache_key!
           before_action :authenticate_user!
           helper_method :sign_out_path, :sign_up_path, :sign_in_path,
                         :current_user, :user_signed_in?
@@ -49,7 +49,7 @@ module Kracken
 
       def check_token_expiry!
         if session[:token_expires_at].nil? || session[:token_expires_at] < Time.zone.now
-          session.delete :user_id
+          delete_session_data
         end
       end
 
@@ -64,31 +64,18 @@ module Kracken
       #
       # This method will:
       #
-      #  - Check for the `_radius_user_cache_key` tld cookie
-      #  - If the key is "none" log them out
+      #  - Check for the presence of a user cache key in Redis
       #  - Compare it to the `user_cache_key` in the session
       #  - If they don't match, redirect them to the oauth provider and
-      #    delete the cookie
+      #    delete the session
       #
-      def handle_user_cache_cookie!
-        if cookies[:_radius_user_cache_key]
-          if cookies[:_radius_user_cache_key] == "none"
-            # Sign out current user
-            session.delete :user_id
+      def handle_user_cache_key!
+        return unless session_present?
+        return if session_and_redis_match?
 
-            # Clear that user's cache key
-            session.delete :user_cache_key
-
-          elsif session[:user_cache_key] != cookies[:_radius_user_cache_key]
-            # Delete the cookie to prevent redirect loops
-            cookies.delete :_radius_user_cache_key
-
-            # Redirect to the account app
-            redirect_to_sign_in
-          end
-        end
+        delete_session_data
+        redirect_to_sign_in
       end
-
 
       def current_user=(u)
         @current_user = u
@@ -123,6 +110,23 @@ module Kracken
       end
 
       private
+
+      def session_present?
+        session[:user_uid] && session[:user_cache_key]
+      end
+
+      def session_and_redis_match?
+        Kracken::SessionManager.get(session[:user_uid]) == session[:user_cache_key]
+      end
+
+      def delete_session_data
+        # Sign out current user
+        session.delete :user_id
+
+        # Clear that user's cache data
+        session.delete :user_uid
+        session.delete :user_cache_key
+      end
 
       def user_class
         Kracken.config.user_class
