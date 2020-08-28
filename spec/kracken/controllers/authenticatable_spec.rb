@@ -95,6 +95,7 @@ module Kracken
         end
 
         it "#authenticate_user is true" do
+          controller.session[:token_expires_at] = Time.zone.now + 5.minutes
           expect(controller.authenticate_user).to be_truthy
         end
 

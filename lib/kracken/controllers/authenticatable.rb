@@ -32,12 +32,13 @@ module Kracken
       end
 
       def authenticate_user
+        check_token_expiry!
         user_signed_in?
       end
 
       def authenticate_user!
-        check_token_expiry!
-        return if user_signed_in?
+        return if authenticate_user
+
         if request.format == :json
           render json: {error: '401 Unauthorized'}, status: :unauthorized
         elsif request.format == :js
