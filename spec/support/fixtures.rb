@@ -17,6 +17,9 @@ module Kracken
           "organizations"=>[
             {"uid"=>1, "name"=>"Radius Networks"},
           ],
+          "organization_roles"=>[
+            {"uid"=>1, "organization_id"=>1, "role"=>"owner"},
+          ],
           "services"=>[
             {"uid"=>1, "slug"=>"pickup", "name"=>"FlyBuy Pickup"},
           ],
