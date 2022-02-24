@@ -34,6 +34,7 @@ module OmniAuth
           "confirmed",
           "teams",
           "organizations",
+          "organization_roles",
           "services",
           "service_roles",
           "linked_accounts",
