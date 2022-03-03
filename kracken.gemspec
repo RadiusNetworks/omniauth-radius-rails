@@ -23,9 +23,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'omniauth', '~> 1.0'
   s.add_dependency 'omniauth-oauth2', '~> 1.1'
   s.add_dependency 'rails', [">= 5.2", "< 7.0"]
+  s.add_dependency 'redis'
 
-  s.add_development_dependency 'pry'
-  s.add_development_dependency 'pry-nav'
+  s.add_development_dependency 'pry-byebug'
   s.add_development_dependency 'rspec-rails', '~> 3.5'
   s.add_development_dependency 'webmock', '~> 3.8'
 end
