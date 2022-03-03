@@ -1,13 +1,27 @@
 # frozen_string_literal: true
 
+require 'redis'
+
 module Kracken
   module SessionManager
     def self.conn
-      @conn ||= if ENV["REDIS_SESSION_URL"].present?
-                  Redis.new(url: ENV["REDIS_SESSION_URL"])
-                else
-                  NullRedis.new
-                end
+      @conn ||=
+        begin
+          default_redis_options = { url: ENV['REDIS_SESSION_URL'] }
+          redis_options = default_redis_options.merge(Kracken.config.redis_options).compact
+
+          if redis_options.any?
+            Redis.new(**redis_options)
+          else
+            NullRedis.new
+          end
+        end
+    end
+
+    # @api private
+    # For use in testing only
+    def self.reset_conn
+      @conn = nil
     end
 
     def self.get(user_id)
