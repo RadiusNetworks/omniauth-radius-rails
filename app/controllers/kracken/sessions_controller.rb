@@ -8,6 +8,7 @@ module Kracken
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
       session[:user_id] = @user.id
       session[:user_uid] = @user.uid
+      session[:is_admin] = @user.admin
       session[:user_cache_key] = Kracken::SessionManager.get(@user.uid)
       session[:token_expires_at] = Time.zone.at(auth_hash[:credentials][:expires_at])
 
