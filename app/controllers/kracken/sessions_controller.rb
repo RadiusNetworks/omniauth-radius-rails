@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module Kracken
-  class SessionsController < ActionController::Base
+  class SessionsController < ActionController::Base # rubocop:disable Rails/ApplicationController
     protect_from_forgery with: :exception
 
-    def create
+    def create # rubocop:disable Metrics/AbcSize
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
       session[:user_id] = @user.id
       session[:user_uid] = @user.uid
@@ -24,10 +24,12 @@ module Kracken
       render text: "Sorry, but you didn't allow access to our app!"
     end
 
-    protected
+  protected
 
     def return_to_path
-      request.env['omniauth.origin'] || "/"
+      return "/" unless request.env['omniauth.origin'].starts_with?('/')
+
+      request.env['omniauth.origin']
     end
 
     def auth_hash
