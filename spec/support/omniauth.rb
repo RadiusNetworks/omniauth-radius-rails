@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'ostruct'
 OmniAuth.config.test_mode = true
 
 module OAuthHelper
