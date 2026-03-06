@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-$:.push File.expand_path('../lib', __FILE__)
+$:.push File.expand_path('lib', __dir__)
 
 # Maintain your gem's version:
 require 'kracken/version'
@@ -20,9 +20,9 @@ Gem::Specification.new do |s|
   s.executables = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
 
   s.add_dependency 'faraday', '~> 2.0'
-  s.add_dependency 'omniauth', '~> 1.0'
-  s.add_dependency 'omniauth-oauth2', '~> 1.1'
   s.add_dependency 'oauth2', '< 2'
+  s.add_dependency 'omniauth', '~> 1.0'
+  s.add_dependency 'omniauth-oauth2', '~> 1.7'
   s.required_ruby_version = '>= 3.2'
 
   s.add_dependency 'rails', [">= 5.2", "< 8"]
@@ -31,4 +31,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pry-byebug'
   s.add_development_dependency 'rspec-rails', '~> 6.0'
   s.add_development_dependency 'webmock', '~> 3.8'
+  s.metadata['rubygems_mfa_required'] = 'true'
 end
