@@ -36,7 +36,7 @@ module Kracken
           a_controller.params = { token: expected_token }
 
           expect {
-            ActiveSupport::Deprecation.silence do
+            Rails.application.deprecators.silence do
               a_controller.authenticate_user_with_token!
             end
           }.to change {
