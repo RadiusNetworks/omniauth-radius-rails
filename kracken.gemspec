@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'oauth2', '< 2'
   s.add_dependency 'omniauth', '~> 1.0'
   s.add_dependency 'omniauth-oauth2', '~> 1.7'
-  s.required_ruby_version = '>= 3.2'
+  s.required_ruby_version = '>= 3.1.7'
 
   s.add_dependency 'rails', [">= 5.2", "< 8"]
   s.add_dependency 'redis'
