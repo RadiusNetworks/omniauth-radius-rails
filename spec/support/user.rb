@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# In memory user model
+# In-memory User model for testing (previously in spec/dummy)
 class User
   @@users = {}
 
