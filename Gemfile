@@ -15,7 +15,4 @@ gemspec
 # To use debugger
 # gem 'debugger'
 
-rails_dependencies_gemfile = File.expand_path("../Gemfile-rails-dependencies", __FILE__)
-eval_gemfile rails_dependencies_gemfile
-
-gem 'radius-spec', require: false, group: %i[development test] if RUBY_VERSION.to_f >= 2.5
+gem 'radius-spec', require: false, group: %i[development test]
