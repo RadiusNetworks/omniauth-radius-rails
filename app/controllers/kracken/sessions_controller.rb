@@ -27,9 +27,12 @@ module Kracken
   protected
 
     def return_to_path
-      return "/" unless request.env['omniauth.origin'].starts_with?('/')
-
-      request.env['omniauth.origin']
+      origin = request.env['omniauth.origin']
+      return "/" unless origin&.start_with?('/')
+      return "/" if URI.parse(origin).host
+      origin
+    rescue URI::InvalidURIError
+      "/"
     end
 
     def auth_hash
