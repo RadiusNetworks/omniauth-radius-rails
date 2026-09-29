@@ -13,6 +13,7 @@ require "kracken/authenticator"
 require "kracken/registration"
 require "kracken/railtie" if defined?(Rails)
 require "kracken/session_manager"
+require "kracken/logout_token"
 
 module Kracken
   mattr_accessor :config

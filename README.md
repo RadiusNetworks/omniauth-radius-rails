@@ -35,6 +35,28 @@ Helpers
 * `sign_up_path`
 * `sign_in_path`
 
+#### Signing out
+
+`sign_out_path` only accepts `DELETE`, so a cross-site `<img>` or link can't
+sign users out. Link to it with `method: :delete` (or use `button_to`):
+
+```slim
+= link_to "Sign Out", sign_out_path, method: :delete
+```
+
+It ends the app's session, then redirects to the account server's
+`/users/client_sign_out` with a short-lived signed token so the account
+server ends its session too. The query parameters are `client_id`, `uid`,
+`ts` (unix seconds), `redirect_to` and `sig`, where:
+
+```
+sig = HMAC-SHA256(app_secret, "logout|<client_id>|<uid>|<ts>|<redirect_to>")
+```
+
+The account server rejects the token once it's more than five minutes old or
+if it's for a different user, and only redirects to hosts registered for the
+client.
+
 
 #### Token Authenticatable
 
