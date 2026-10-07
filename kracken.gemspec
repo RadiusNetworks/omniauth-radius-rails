@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'faraday', ['>= 0.8', '< 2.0']
   s.add_dependency 'omniauth', '~> 1.0'
-  s.add_dependency 'omniauth-oauth2', '~> 1.1'
+  s.add_dependency 'omniauth-oauth2', '~> 1.7' # 1.7 adds PKCE support
   s.add_dependency 'oauth2', '< 2'
   s.add_dependency 'rails', [">= 5.2", "< 7.1"]
   s.add_dependency 'redis'
