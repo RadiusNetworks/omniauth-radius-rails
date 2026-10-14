@@ -38,10 +38,11 @@ Helpers
 #### Signing out
 
 `sign_out_path` only accepts `DELETE`, so a cross-site `<img>` or link can't
-sign users out. Link to it with `method: :delete` (or use `button_to`):
+sign users out. Use `button_to`, which renders a form that includes the CSRF
+token:
 
 ```slim
-= link_to "Sign Out", sign_out_path, method: :delete
+= button_to "Sign Out", sign_out_path, method: :delete
 ```
 
 It ends the app's session, then redirects to the account server's
