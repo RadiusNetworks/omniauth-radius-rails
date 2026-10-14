@@ -113,16 +113,26 @@ RSpec.describe Kracken::SessionsController, type: :controller do
     end
 
     # rspec-rails disables forgery protection in controller specs, so turn it
-    # back on to prove a forged sign out is rejected.
+    # back on to prove a forged or stale sign out is handled.
     context "without a valid authenticity token" do
       before do
         controller.allow_forgery_protection = true
       end
 
-      it "rejects the request and keeps the session" do
+      it "keeps the session" do
+        session[:user_id] = "1"
         session[:user_uid] = "42"
-        expect { delete :destroy }.to raise_error(ActionController::InvalidAuthenticityToken)
+        delete :destroy
+        expect(session[:user_id]).to eq "1"
         expect(session[:user_uid]).to eq "42"
+      end
+
+      it "asks the account server to confirm instead of sending a logout token" do
+        session[:user_uid] = "42"
+        delete :destroy
+        expect(response).to redirect_to(
+          "#{Kracken.config.provider_url}/users/sign_out?redirect_to=http%3A%2F%2Ftest.host",
+        )
       end
     end
   end
