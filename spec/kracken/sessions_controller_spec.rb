@@ -111,6 +111,20 @@ RSpec.describe Kracken::SessionsController, type: :controller do
         "#{Kracken.config.provider_url}/users/sign_out?redirect_to=http%3A%2F%2Ftest.host",
       )
     end
+
+    # rspec-rails disables forgery protection in controller specs, so turn it
+    # back on to prove a forged sign out is rejected.
+    context "without a valid authenticity token" do
+      before do
+        controller.allow_forgery_protection = true
+      end
+
+      it "rejects the request and keeps the session" do
+        session[:user_uid] = "42"
+        expect { delete :destroy }.to raise_error(ActionController::InvalidAuthenticityToken)
+        expect(session[:user_uid]).to eq "42"
+      end
+    end
   end
 
   describe "routing" do
