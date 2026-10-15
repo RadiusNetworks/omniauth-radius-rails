@@ -26,6 +26,9 @@ module Kracken
           "service_roles"=>[
             {"uid"=>1, "role"=>"owner", "team_id"=>1, "service_id"=>1, "organization_id"=>1},
           ],
+          "team_memberships"=>[
+            {"uid"=>1, "role"=>"corporate_admin", "team_id"=>2, "organization_id"=>1},
+          ],
           "teams"=>[
             {"id"=>1, "name"=>"Radius Networks", "uid"=>1},
             {"id"=>2, "name"=>"TARDIS", "uid"=>2}

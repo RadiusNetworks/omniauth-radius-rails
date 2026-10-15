@@ -35,6 +35,7 @@ module OmniAuth
           "teams",
           "organizations",
           "organization_roles",
+          "team_memberships",
           "services",
           "service_roles",
           "linked_accounts",
