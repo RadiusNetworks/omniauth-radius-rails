@@ -23,6 +23,11 @@ module OmniAuth
         access_token_url: "#{provider_url}/auth/radius/access_token"
       }
 
+      # PKCE (RFC 7636): send an S256 code_challenge on authorize and the
+      # matching code_verifier on the token request. omniauth-oauth2 >= 1.7
+      # generates the verifier per request and keeps it in the session.
+      option :pkce, true
+
       uid { raw_info['id'] }
 
       info do
