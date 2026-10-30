@@ -143,4 +143,20 @@ RSpec.describe Kracken::SessionsController, type: :controller do
       expect(get: "/sign_out").not_to be_routable
     end
   end
+
+  describe "GET :failure" do
+    it "renders a generic failure message as unauthorized plain text" do
+      get :failure
+
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.media_type).to eq("text/plain")
+      expect(response.body).to eq("Sorry, we couldn't sign you in. Please try again.")
+    end
+
+    it "does not reflect OmniAuth failure params" do
+      get :failure, params: { message: "Call 555-0100", strategy: "evil", origin: "//evil.example" }
+
+      expect(response.body).to eq("Sorry, we couldn't sign you in. Please try again.")
+    end
+  end
 end
