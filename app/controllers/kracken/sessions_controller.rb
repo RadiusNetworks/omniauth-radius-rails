@@ -32,7 +32,7 @@ module Kracken
     end
 
     def failure
-      render text: "Sorry, but you didn't allow access to our app!"
+      render plain: "Sorry, we couldn't sign you in. Please try again.", status: :unauthorized
     end
 
   protected
