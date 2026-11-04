@@ -20,9 +20,14 @@ Gem::Specification.new do |s|
   s.executables = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
 
   s.add_dependency 'faraday', '~> 2.0'
-  s.add_dependency 'oauth2', '< 2'
-  s.add_dependency 'omniauth', '~> 1.0'
-  s.add_dependency 'omniauth-oauth2', '~> 1.7'
+  s.add_dependency 'hashie', '>= 3.4.6'
+  s.add_dependency 'oauth2', '~> 2.0'
+  s.add_dependency 'omniauth', '~> 2.0'
+  s.add_dependency 'omniauth-oauth2', '~> 1.10'
+  # OmniAuth 2 validates the request phase, but its built-in check uses
+  # rack-protection's token rather than Rails'. This wires it to Rails'
+  # `authenticity_token` and restricts the request phase to POST.
+  s.add_dependency 'omniauth-rails_csrf_protection', '~> 2.0'
   s.required_ruby_version = '>= 3.1.7'
 
   s.add_dependency 'rails', [">= 7.1", "< 9"]

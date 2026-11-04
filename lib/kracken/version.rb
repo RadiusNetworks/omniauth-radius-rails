@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Kracken
-  VERSION = "0.7.0.rc1"
+  VERSION = "1.0.0.rc1"
 end

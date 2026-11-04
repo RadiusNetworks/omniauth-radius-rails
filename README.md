@@ -35,6 +35,29 @@ Helpers
 * `sign_up_path`
 * `sign_in_path`
 
+#### Signing in
+
+OmniAuth 2 accepts the request phase only over `POST`, carrying a CSRF token,
+which closes CVE-2015-9284 (a cross-site link or `<img>` could previously
+start sign in). A plain link to `sign_in_path` therefore no longer works:
+
+```slim
+/ No longer works -- GET /auth/radius returns 404
+= link_to "Sign In", sign_in_path
+```
+
+Use `button_to`, which renders a form carrying the CSRF token:
+
+```slim
+= button_to "Sign In", sign_in_path, method: :post
+```
+
+`authenticate_user!` still redirects unauthenticated users to sign in on its
+own. It sends them to an interstitial page served by the engine, which posts
+that form for them and falls back to a "Continue" button if the browser does
+not run the script. Apps only need to change sign-in links they render
+themselves.
+
 #### Signing out
 
 `sign_out_path` only accepts `DELETE`, so a cross-site `<img>` or link can't

@@ -133,9 +133,12 @@ module Kracken
         Kracken.config.user_class
       end
 
+      # The request phase is POST-only under OmniAuth 2, so send them to the
+      # engine's interstitial, which posts to `sign_in_path` for them, rather
+      # than redirecting straight at it with a GET.
       def redirect_to_sign_in
         if request.fullpath
-          redirect_to sign_in_path(request.fullpath)
+          redirect_to kracken.start_sign_in_path(origin: request.fullpath)
         else
           redirect_to root_url
         end
