@@ -20,7 +20,18 @@ module OmniAuth
       option :client_options, {
         site: provider_url,
         authorize_url: "#{provider_url}/auth/radius/authorize",
-        access_token_url: "#{provider_url}/auth/radius/access_token"
+        # `access_token_url` is not an oauth2 option -- the key is `token_url`
+        # -- so this previously fell through to oauth2's default of
+        # `<site>/oauth/token`. That default is what the account server
+        # actually serves (it only routes GET, not POST, for
+        # `/auth/radius/access_token`), so name it explicitly rather than
+        # leave a key that looks meaningful and is not.
+        token_url: "#{provider_url}/oauth/token",
+        # oauth2 2.0 changed the default from `:request_body` to `:basic_auth`.
+        # The account server reads `client_id` / `client_secret` from params
+        # only, so keep sending them in the body. Drop this once the provider
+        # accepts HTTP Basic client credentials.
+        auth_scheme: :request_body,
       }
 
       # PKCE (RFC 7636): send an S256 code_challenge on authorize and the

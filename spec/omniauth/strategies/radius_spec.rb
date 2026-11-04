@@ -81,28 +81,76 @@ RSpec.describe OmniAuth::Strategies::Radius do
   end
 
   describe 'token request' do
-    it 'sends the code_verifier to the token endpoint' do
-      challenge = strategy.authorize_params[:code_challenge]
-      sent = nil
+    # The callback is a separate HTTP request, so in production it is handled
+    # by a new strategy instance that shares only the session. Building one
+    # here (rather than swapping `@env` on the instance that ran the authorize
+    # phase) avoids a stale memoized `request` and matches what really happens.
+    def callback_strategy(session, code: 'abc123')
+      env = Rack::MockRequest
+              .env_for("http://app.example.com/auth/radius/callback?code=#{code}")
+              .merge('rack.session' => session)
+      described_class.new(app, 'client-id', 'client-secret').tap { |s|
+        s.instance_variable_set(:@env, env)
+      }
+    end
+
+    def stub_token_endpoint
+      sent = {}
       stub_request(:post, %r{\A#{Regexp.escape(described_class.provider_url)}/})
         .to_return do |request|
-          sent = Rack::Utils.parse_query(request.body)
+          sent[:url] = request.uri.to_s
+          sent[:body] = Rack::Utils.parse_query(request.body)
+          sent[:headers] = request.headers
           {
             status: 200,
             headers: { 'Content-Type' => 'application/json' },
             body: { access_token: 'token', token_type: 'bearer' }.to_json,
           }
         end
-      callback_env = Rack::MockRequest.env_for('http://app.example.com/auth/radius/callback?code=abc123')
-                                      .merge('rack.session' => session)
-      strategy.instance_variable_set(:@env, callback_env)
+      sent
+    end
 
-      token = strategy.send(:build_access_token)
+    it 'sends the code_verifier to the token endpoint' do
+      challenge = strategy.authorize_params[:code_challenge]
+      sent = stub_token_endpoint
+
+      token = callback_strategy(session).send(:build_access_token)
 
       expect(token.token).to eq 'token'
-      expect(sent['code']).to eq 'abc123'
-      expect(sent['grant_type']).to eq 'authorization_code'
-      expect(s256(sent['code_verifier'])).to eq challenge
+      expect(sent[:body]['code']).to eq 'abc123'
+      expect(sent[:body]['grant_type']).to eq 'authorization_code'
+      expect(s256(sent[:body]['code_verifier'])).to eq challenge
+    end
+
+    # The account server reads `client_id` / `client_secret` from params and
+    # has no HTTP Basic support, so oauth2 2.x's `:basic_auth` default would
+    # fail the exchange. `auth_scheme: :request_body` keeps them in the body.
+    it 'sends the client credentials in the body, not as HTTP Basic' do
+      strategy.authorize_params
+      sent = stub_token_endpoint
+
+      callback_strategy(session).send(:build_access_token)
+
+      expect(sent[:body]).to include(
+        'client_id' => 'client-id',
+        'client_secret' => 'client-secret',
+      )
+      expect(sent[:headers]).not_to include('Authorization')
+    end
+
+    # oauth2 ignores an unknown `access_token_url` option and falls back to
+    # `<site>/oauth/token`, which is the route the account server actually
+    # serves for POST. Pin it so a rename cannot silently move the endpoint.
+    it 'posts to the provider token endpoint' do
+      strategy.authorize_params
+      sent = stub_token_endpoint
+
+      callback_strategy(session).send(:build_access_token)
+
+      expected = URI.parse("#{described_class.provider_url}/oauth/token")
+      actual = URI.parse(sent[:url])
+
+      expect([actual.host, actual.path]).to eq [expected.host, expected.path]
     end
   end
 end
