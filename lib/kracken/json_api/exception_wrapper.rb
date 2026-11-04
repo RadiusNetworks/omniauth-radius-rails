@@ -3,39 +3,40 @@
 module Kracken
   module JsonApi
     class ExceptionWrapper < ActionDispatch::ExceptionWrapper
-      cattr_accessor :rescue_with_details_responses
-      @@rescue_with_details_responses = Hash.new
-      @@rescue_with_details_responses.merge!(
+      # Rack 3.1 renamed `:unprocessable_entity` to `:unprocessable_content`
+      # and deprecated the old spelling, which now warns on every use. Rails
+      # papers over this with `ActionDispatch::Response.rack_status_code`, but
+      # only from 7.2, and we still support 7.1.
+      UNPROCESSABLE =
+        if Rack::Utils::SYMBOL_TO_STATUS_CODE.key?(:unprocessable_content)
+          :unprocessable_content
+        else
+          :unprocessable_entity
+        end
+
+      cattr_accessor :rescue_with_details_responses, default: {
         'Kracken::ResourceNotFound' => :not_found,
         'Kracken::TokenUnauthorized' => :unauthorized,
-        'Kracken::UnprocessableEntity' => :unprocessable_entity,
-      )
+        'Kracken::UnprocessableEntity' => UNPROCESSABLE,
+      }
 
       def self.status_code_for_exception(class_name)
-        if @@rescue_with_details_responses.has_key?(class_name)
-          Rack::Utils.status_code(@@rescue_with_details_responses[class_name])
-        else
-          Rack::Utils.status_code(@@rescue_responses[class_name])
-        end
+        status = rescue_with_details_responses.fetch(class_name) {
+          rescue_responses[class_name]
+        }
+        Rack::Utils.status_code(status)
       end
 
-      # Temporary work around while we support versions of Rails before 4
-      if Rails::VERSION::MAJOR < 5
-        def is_details_exception?
-          @@rescue_with_details_responses.has_key?(exception.class.name)
-        end
-      else
-        attr_reader :raised_exception
+      attr_reader :raised_exception
 
-        def initialize(backtrace_cleaner, exception)
-          super
-          @raised_exception = exception
-        end
+      def initialize(backtrace_cleaner, exception)
+        super
+        @raised_exception = exception
+      end
 
-        def is_details_exception?
-          @@rescue_with_details_responses.has_key?(raised_exception.class.name) ||
-            @@rescue_with_details_responses.has_key?(exception.class.name)
-        end
+      def is_details_exception?
+        rescue_with_details_responses.key?(raised_exception.class.name) ||
+          rescue_with_details_responses.key?(exception.class.name)
       end
     end
   end

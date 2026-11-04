@@ -25,11 +25,11 @@ Gem::Specification.new do |s|
   s.add_dependency 'omniauth-oauth2', '~> 1.7'
   s.required_ruby_version = '>= 3.1.7'
 
-  s.add_dependency 'rails', [">= 5.2", "< 8"]
+  s.add_dependency 'rails', [">= 7.1", "< 9"]
   s.add_dependency 'redis'
 
   s.add_development_dependency 'pry-byebug'
-  s.add_development_dependency 'rspec-rails', '~> 6.0'
+  s.add_development_dependency 'rspec-rails', '>= 6.1'
   s.add_development_dependency 'webmock', '~> 3.8'
   s.metadata['rubygems_mfa_required'] = 'true'
 end

@@ -3,7 +3,7 @@
 module Kracken
   module JsonApi
     # Error logging methods used by `ActionDispatch::DebugExceptions`
-    # https://github.com/rails/rails/blob/v4.2.6/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb
+    # https://github.com/rails/rails/blob/v8.0.0/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb
     module ErrorLogging
       def log_error(env, wrapper)
         logger = logger(env)
@@ -14,13 +14,10 @@ module Kracken
         trace = wrapper.application_trace
         trace = wrapper.framework_trace if trace.empty?
 
-        ActiveSupport::Deprecation.silence do
-          # After Ruby 2.2.3 support change `String.new` to `+` literal
-          message = String.new("\n#{exception.class} (#{exception.message}):\n")
-          message << exception.annoted_source_code.to_s if exception.respond_to?(:annoted_source_code)
-          message << "  " << trace.join("\n  ")
-          logger.fatal("#{message}\n\n")
-        end
+        message = +"\n#{exception.class} (#{exception.message}):\n"
+        message << Array(wrapper.annotated_source_code).join
+        message << "  " << trace.join("\n  ")
+        logger.fatal("#{message}\n\n")
       end
 
       def logger(env)
@@ -49,11 +46,15 @@ module Kracken
 
       # Use similar logic to how `ActionDispatch::DebugExceptions` captures
       # routing errors.
-      # https://github.com/rails/rails/blob/v4.2.6/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb
+      # https://github.com/rails/rails/blob/v8.0.0/actionpack/lib/action_dispatch/middleware/debug_exceptions.rb
       def capture_error(env)
         _, headers, body = response = @app.call(env)
 
-        if headers['X-Cascade'] == 'pass'
+        # Rack 3 lower-cases response header names. `ActionDispatch::Constants`
+        # resolves to whichever spelling the loaded Rack uses, so this matches
+        # on both. Hard-coding "X-Cascade" silently stops matching under Rack 3,
+        # which turns routing errors back into bare 404s.
+        if headers[ActionDispatch::Constants::X_CASCADE] == 'pass'
           body.close if body.respond_to?(:close)
           raise ActionController::RoutingError,
                 "No route matches [#{env['REQUEST_METHOD']}] " \
@@ -67,16 +68,10 @@ module Kracken
         render_json_error(wrapper)
       end
 
-      if Rails::VERSION::MAJOR < 5
-        def exception_wrapper(env, exception)
-          ExceptionWrapper.new(env, exception)
-        end
-      else
-        def exception_wrapper(env, exception)
-          request = ActionDispatch::Request.new(env)
-          backtrace_cleaner = request.get_header('action_dispatch.backtrace_cleaner')
-          ExceptionWrapper.new(backtrace_cleaner, exception)
-        end
+      def exception_wrapper(env, exception)
+        request = ActionDispatch::Request.new(env)
+        backtrace_cleaner = request.get_header('action_dispatch.backtrace_cleaner')
+        ExceptionWrapper.new(backtrace_cleaner, exception)
       end
 
       if Rails.env.production?
@@ -111,7 +106,11 @@ module Kracken
       def numeric_code(status)
         case status
         when Symbol
-          code = Rack::Utils::SYMBOL_TO_STATUS_CODE[status]
+          # `Rack::Utils.status_code` still understands the symbols Rack 3.1
+          # renamed (e.g. `:unprocessable_entity`), which are no longer present
+          # in `SYMBOL_TO_STATUS_CODE`. It raises `ArgumentError` on genuinely
+          # unknown symbols, which is this method's contract anyway.
+          return Rack::Utils.status_code(status)
         when Integer
           code = status
         when String
@@ -141,11 +140,16 @@ module Kracken
         }.to_json
       end
 
+      # Rack 3 requires lower-case response header names, Rack 2 conventionally
+      # uses capitalized ones. `ActionDispatch::Response::Headers` is the
+      # case-insensitive hash Rails itself uses, and resolves to the right
+      # implementation for the loaded Rack, so this is correct on both.
       def headers(body)
-        {
-          'Content-Type'   => "application/json; charset=#{ActionDispatch::Response.default_charset}",
-          'Content-Length' => body.bytesize.to_s
-        }
+        headers = ActionDispatch::Response::Headers.new
+        headers['Content-Type'] =
+          "application/json; charset=#{ActionDispatch::Response.default_charset}"
+        headers['Content-Length'] = body.bytesize.to_s
+        headers
       end
 
       def status_code_as_json(status)
