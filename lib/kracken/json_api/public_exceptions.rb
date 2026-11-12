@@ -15,9 +15,16 @@ module Kracken
         trace = wrapper.framework_trace if trace.empty?
 
         message = +"\n#{exception.class} (#{exception.message}):\n"
-        message << Array(wrapper.annotated_source_code).join
+        message << annotated_source(wrapper)
         message << "  " << trace.join("\n  ")
         logger.fatal("#{message}\n\n")
+      end
+
+      # One line per source line, ending in a newline so the trace that
+      # follows starts on its own line (as `DebugExceptions` logs it).
+      def annotated_source(wrapper)
+        source = Array(wrapper.annotated_source_code)
+        source.empty? ? "" : "#{source.join("\n")}\n"
       end
 
       def logger(env)

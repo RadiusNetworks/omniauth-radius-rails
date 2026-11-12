@@ -94,12 +94,18 @@ module Kracken
         it "maps UnprocessableEntity to 422 without a Rack deprecation warning" do
           app = ->(_env) { raise UnprocessableEntity, "bad" }
 
-          warning = nil
-          allow(Kernel).to receive(:warn) { |msg, **| warning = msg }
-          status, _headers, _body = call("/api/widgets", app)
+          # Rack warns via `Kernel#warn` from inside `Rack::Utils`, so watch
+          # stderr rather than stubbing a receiver. Give the middleware its own
+          # logger so its error log doesn't land on stderr too.
+          env = env_for("/api/widgets")
+          env['action_dispatch.logger'] = ActiveSupport::Logger.new(StringIO.new)
+
+          status = nil
+          expect {
+            status, _headers, _body = described_class.new(app).call(env)
+          }.not_to output.to_stderr
 
           expect(status).to eq 422
-          expect(warning).to be_nil
         end
 
         it "reports an unmapped error as a 500" do
