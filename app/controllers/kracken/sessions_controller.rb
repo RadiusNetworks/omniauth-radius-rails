@@ -4,6 +4,18 @@ module Kracken
   class SessionsController < ActionController::Base # rubocop:disable Rails/ApplicationController
     protect_from_forgery with: :exception
 
+    # GET /sign_in
+    #
+    # OmniAuth 2 only accepts the request phase over POST, carrying Rails'
+    # authenticity token, so an unauthenticated request can no longer simply
+    # be redirected to `/auth/radius`. This renders a form that posts there
+    # and submits it on load, leaving a working button for anyone whose
+    # browser does not run the script (or whose CSP blocks it).
+    def new
+      @sign_in_action = sign_in_action
+      render layout: false
+    end
+
     def create # rubocop:disable Metrics/AbcSize
       @user = user_class.find_or_create_from_auth_hash(auth_hash)
       session[:user_id] = @user.id
@@ -36,6 +48,24 @@ module Kracken
     end
 
   protected
+
+    def sign_in_action
+      origin = safe_origin
+      return '/auth/radius' unless origin
+
+      "/auth/radius?origin=#{CGI.escape(origin)}"
+    end
+
+    # `origin` is attacker-controllable, so only reflect a plain local path
+    # into the form. `return_to_path` checks this again on the way back; this
+    # keeps a hostile value out of the rendered page in the first place.
+    def safe_origin
+      origin = params[:origin]
+      return unless origin.is_a?(String)
+      return unless origin.match?(%r{\A/(?![/\\])})
+
+      origin
+    end
 
     # A stale token (an old tab, an expired session) fails the CSRF check the
     # same way a forged request does, so we can't tell them apart. Rather than

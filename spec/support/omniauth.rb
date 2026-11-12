@@ -29,11 +29,13 @@ module OAuthHelper
   module Request
     include OAuthHelper
 
+    # OmniAuth 2 only accepts the request phase over POST, and validates it
+    # against Rails' `authenticity_token`.
     def authenticate_request!(user = OAuthUser)
       OmniAuth.config.mock_auth[:radius] = new_oauth_user_hash(user)
 
-      get "/auth/radius"
-      get response.header['Location']
+      post "/auth/radius"
+      get response.headers['Location']
 
       _request = nil
     end
