@@ -16,3 +16,12 @@ gemspec
 # gem 'debugger'
 
 gem 'radius-spec', require: false, group: %i[development test]
+
+# Lets CI (and you) exercise a specific Rails version against the range the
+# gemspec allows:
+#
+#   RAILS_VERSION="~> 7.1.0" bundle update rails
+#
+if (rails_version = ENV['RAILS_VERSION'])
+  gem 'rails', rails_version
+end
